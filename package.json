@@ -1,0 +1,30 @@
+{
+  "name": "personal-finance-test-automation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Test automation framework for Personal Finance.",
+  "scripts": {
+    "test": "playwright test",
+    "test:smoke": "playwright test --grep @smoke --project=api --project=chromium",
+    "test:contract": "playwright test --grep @contract --project=api",
+    "test:ui": "playwright test --grep @ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    "test:prod:smoke": "TEST_ENV=prod playwright test --grep @smoke-readonly --project=api --project=chromium",
+    "install:browsers": "playwright install"
+  },
+  "keywords": [
+    "playwright",
+    "test-automation",
+    "e2e",
+    "api-testing"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.59.0",
+    "@types/node": "^24.0.0",
+    "typescript": "^5.9.0"
+  }
+}

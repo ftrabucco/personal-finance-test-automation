@@ -25,3 +25,30 @@ documentaran:
 ## Documentacion
 
 La documentacion de analisis y estrategia se encuentra en [`docs/`](docs/README.md).
+
+## Primeros comandos
+
+Instalar dependencias:
+
+```bash
+npm install
+npm run install:browsers
+```
+
+Configurar variables:
+
+```bash
+cp .env.example .env
+```
+
+Ejecutar smoke read-only contra produccion:
+
+```bash
+TEST_ENV=prod npm run test:prod:smoke
+```
+
+Ejecutar smoke local:
+
+```bash
+npm run test:smoke
+```
