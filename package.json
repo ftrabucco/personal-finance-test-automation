@@ -7,6 +7,8 @@
     "test": "playwright test",
     "test:smoke": "playwright test --grep @smoke --project=api --project=chromium",
     "test:contract": "playwright test --grep @contract --project=api",
+    "test:staging:api": "TEST_ENV=staging playwright test --project=api",
+    "test:staging:contract": "TEST_ENV=staging playwright test --grep @contract --project=api",
     "test:ui": "playwright test --grep @ui",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",

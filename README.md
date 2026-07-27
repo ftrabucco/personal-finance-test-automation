@@ -52,3 +52,9 @@ Ejecutar smoke local:
 ```bash
 npm run test:smoke
 ```
+
+Ejecutar contrato API contra staging/test:
+
+```bash
+npm run test:staging:contract
+```
