@@ -12,6 +12,8 @@ docs/
 │   ├── critical-flows.md
 │   ├── api-inventory.md
 │   └── coverage-matrix.md
+├── environment/
+│   └── staging-api-environment.md
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── test-data-strategy.md
@@ -25,6 +27,9 @@ Los test plans por dominio se agregaran despues del inventario funcional. Se
 organizaran por funcionalidad o comportamiento de negocio, no necesariamente
 por pagina.
 
+La documentacion de ambientes se encuentra en
+[`environment/`](environment/staging-api-environment.md).
+
 ## Flujo de trabajo
 
 1. Analizar frontend y backend.
@@ -34,4 +39,3 @@ por pagina.
 5. Preparar el master test plan y el smoke test plan.
 6. Disenar la arquitectura del framework.
 7. Implementar la infraestructura y luego los casos automatizados.
-
