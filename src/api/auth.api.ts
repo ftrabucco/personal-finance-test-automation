@@ -1,5 +1,5 @@
 import type { APIRequestContext } from '@playwright/test'
-import { getEnvironmentConfig } from '@config/environment'
+import { BaseApiClient } from './BaseApiClient'
 
 export interface LoginResponse {
   success: boolean
@@ -15,30 +15,24 @@ export interface LoginResponse {
   error?: string
 }
 
-export class AuthApiClient {
-  constructor(private readonly request: APIRequestContext) {}
+export class AuthApiClient extends BaseApiClient {
+  constructor(request: APIRequestContext) {
+    super(request)
+  }
 
   async login(email: string, password: string) {
-    const env = getEnvironmentConfig()
-
-    return this.request.post(`${env.apiUrl}/auth/login`, {
+    return this.request.post(this.apiUrl('/auth/login'), {
       data: { email, password },
     })
   }
 
   async getProfile(token: string) {
-    const env = getEnvironmentConfig()
-
-    return this.request.get(`${env.apiUrl}/auth/profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    return this.request.get(this.apiUrl('/auth/profile'), {
+      headers: this.authHeaders(token),
     })
   }
 
   async getProfileWithoutToken() {
-    const env = getEnvironmentConfig()
-
-    return this.request.get(`${env.apiUrl}/auth/profile`)
+    return this.request.get(this.apiUrl('/auth/profile'))
   }
 }
