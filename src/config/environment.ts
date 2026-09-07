@@ -52,6 +52,12 @@ function readBooleanEnv(name: string): boolean {
   return readEnv(name)?.toLowerCase() === 'true'
 }
 
+function readEnvironmentValue(name: TestEnvironment, key: string) {
+  const envPrefix = name.toUpperCase()
+
+  return readEnv(`E2E_${envPrefix}_${key}`) || readEnv(`E2E_${key}`)
+}
+
 export function getEnvironmentConfig(): EnvironmentConfig {
   const name = (readEnv('TEST_ENV') || 'local') as TestEnvironment
 
@@ -83,8 +89,8 @@ export function getEnvironmentConfig(): EnvironmentConfig {
     apiUrl,
     allowDestructiveTests: readBooleanEnv('ALLOW_DESTRUCTIVE_TESTS'),
     user: {
-      email: readEnv('E2E_USER_EMAIL'),
-      password: readEnv('E2E_USER_PASSWORD'),
+      email: readEnvironmentValue(name, 'USER_EMAIL'),
+      password: readEnvironmentValue(name, 'USER_PASSWORD'),
     },
   }
 }

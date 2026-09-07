@@ -16,6 +16,7 @@ docs/
 │   └── staging-api-environment.md
 ├── strategy/
 │   ├── automation-strategy.md
+│   ├── git-strategy.md
 │   ├── test-data-strategy.md
 │   └── framework-architecture.md
 └── test-plans/

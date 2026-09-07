@@ -2,7 +2,12 @@ import { test, expect } from '@fixtures/test'
 import { requireTestUser } from '@config/environment'
 
 test.describe('Auth UI smoke @smoke @smoke-readonly @ui @auth @P0', () => {
-  test('CF-AUTH-001 user can login and reach dashboard', async ({ page, loginPage, dashboardPage }) => {
+  test('CF-AUTH-001 user can login and reach dashboard', async (
+    { page, loginPage, dashboardPage },
+    testInfo,
+  ) => {
+    test.skip(testInfo.project.name !== 'chromium', 'Full login flow runs once to avoid auth rate limits')
+
     const user = requireTestUser()
 
     await loginPage.goto()
@@ -20,4 +25,3 @@ test.describe('Auth UI smoke @smoke @smoke-readonly @ui @auth @P0', () => {
     await expect(page).toHaveURL(/\/login/)
   })
 })
-

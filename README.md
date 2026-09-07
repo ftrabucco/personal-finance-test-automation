@@ -58,3 +58,9 @@ Ejecutar contrato API contra staging/test:
 ```bash
 npm run test:staging:contract
 ```
+
+Ejecutar API destructivos contra staging/test:
+
+```bash
+npm run test:staging:destructive
+```

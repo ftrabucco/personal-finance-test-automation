@@ -24,6 +24,34 @@ Caddy
 └── https://api-test.178-156-224-127.sslip.io  -> localhost:3032
 ```
 
+## Frontend staging
+
+Frontend staging fue creado en Vercel usando el mismo repo del frontend:
+
+```text
+https://personal-finance-frontend-staging.vercel.app
+```
+
+La variable clave del proyecto Vercel staging debe apuntar a la API test:
+
+```env
+NEXT_PUBLIC_API_URL=https://api-test.178-156-224-127.sslip.io/api
+```
+
+Para que el navegador permita llamadas desde ese frontend, la API test debe
+permitir ese origin via CORS en el `.env.test` del server:
+
+```env
+CORS_ORIGIN=https://personal-finance-frontend-staging.vercel.app
+```
+
+Si el backend soporta multiples origins separados por coma, staging puede
+aceptar mas de uno:
+
+```env
+CORS_ORIGIN=https://personal-finance-frontend-staging.vercel.app,https://personal-finance-frontend-pied.vercel.app
+```
+
 ## Variables clave
 
 El ambiente test usa un `.env.test` separado en el server:
