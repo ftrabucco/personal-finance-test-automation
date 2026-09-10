@@ -64,3 +64,15 @@ Ejecutar API destructivos contra staging/test:
 ```bash
 npm run test:staging:destructive
 ```
+
+Ejecutar UI destructivos contra staging/test:
+
+```bash
+npm run test:staging:destructive:ui
+```
+
+Ejecutar UI smoke en paralelo:
+
+```bash
+npm run test:ui:parallel
+```

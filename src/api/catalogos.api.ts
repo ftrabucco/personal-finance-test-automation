@@ -3,7 +3,10 @@ import { BaseApiClient } from './BaseApiClient'
 
 export interface CatalogoItem {
   id: number
-  nombre: string
+  nombre?: string
+  nombre_categoria?: string
+  nombre_importancia?: string
+  nombre_frecuencia?: string
 }
 
 export interface CatalogosResponse {
