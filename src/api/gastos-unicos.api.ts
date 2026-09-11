@@ -11,6 +11,25 @@ export interface GastoUnicoRequest {
   moneda_origen?: 'ARS' | 'USD'
 }
 
+export interface GastoUnicoResponseItem {
+  id: number
+  descripcion: string
+  monto?: number | string
+  monto_ars?: number | string
+  fecha?: string
+  categoria_gasto_id?: number
+  importancia_gasto_id?: number
+  tipo_pago_id?: number
+  moneda_origen?: 'ARS' | 'USD'
+}
+
+export interface GastoUnicoListResponse {
+  success: boolean
+  data?: GastoUnicoResponseItem[] | { gastos?: GastoUnicoResponseItem[] }
+  error?: string
+  message?: string
+}
+
 export class GastosUnicosApiClient extends BaseApiClient {
   constructor(request: APIRequestContext) {
     super(request)
