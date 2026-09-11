@@ -16,6 +16,7 @@ docs/
 │   └── staging-api-environment.md
 ├── strategy/
 │   ├── automation-strategy.md
+│   ├── automation-backlog.md
 │   ├── git-strategy.md
 │   ├── pr-review-checklist.md
 │   ├── test-data-strategy.md
@@ -34,6 +35,9 @@ La documentacion de ambientes se encuentra en
 
 El checklist de review pre-PR se encuentra en
 [`strategy/pr-review-checklist.md`](strategy/pr-review-checklist.md).
+
+El backlog de cobertura y madurez del framework se encuentra en
+[`strategy/automation-backlog.md`](strategy/automation-backlog.md).
 
 ## Flujo de trabajo
 
