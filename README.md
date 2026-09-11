@@ -76,3 +76,28 @@ Ejecutar UI smoke en paralelo:
 ```bash
 npm run test:ui:parallel
 ```
+
+Validar el seed usado por Playwright Agents:
+
+```bash
+npm run test:agent-seed
+```
+
+## Playwright Agents
+
+El repo incluye agentes oficiales de Playwright para Codex en `.codex/agents/`:
+
+- `playwright_test_planner`
+- `playwright_test_generator`
+- `playwright_test_healer`
+
+Los planes generados viven en [`specs/`](specs/README.md). El codigo generado por agents se trata como borrador hasta adaptarlo a los patrones del framework.
+
+## Review pre-PR
+
+Antes de pushear o abrir PR, usar la skill local `test-automation-pr-review` y el checklist:
+
+```text
+.agents/skills/test-automation-pr-review/SKILL.md
+docs/strategy/pr-review-checklist.md
+```

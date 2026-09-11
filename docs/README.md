@@ -17,6 +17,7 @@ docs/
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── git-strategy.md
+│   ├── pr-review-checklist.md
 │   ├── test-data-strategy.md
 │   └── framework-architecture.md
 └── test-plans/
@@ -30,6 +31,9 @@ por pagina.
 
 La documentacion de ambientes se encuentra en
 [`environment/`](environment/staging-api-environment.md).
+
+El checklist de review pre-PR se encuentra en
+[`strategy/pr-review-checklist.md`](strategy/pr-review-checklist.md).
 
 ## Flujo de trabajo
 
