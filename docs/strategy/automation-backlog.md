@@ -22,8 +22,8 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [ ] Add UI P0 flow for income validation errors.
 - [ ] Add API cleanup helpers by description or E2E prefix.
 - [ ] Add reusable catalog selector helper for forms.
-- [ ] Add GitHub Actions for contract and smoke tests.
-- [ ] Add manual GitHub Actions workflow for staging destructive tests.
+- [x] Add GitHub Actions for contract and smoke tests.
+- [x] Add manual GitHub Actions workflow for staging destructive tests.
 
 ## P1 - Framework Maturity
 
