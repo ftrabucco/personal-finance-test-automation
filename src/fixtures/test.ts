@@ -1,6 +1,7 @@
 import { request as playwrightRequest, test as base, type Page } from '@playwright/test'
 import { AuthApiClient } from '@api/auth.api'
 import { CatalogosApiClient } from '@api/catalogos.api'
+import { GastosApiClient } from '@api/gastos.api'
 import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
 import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
@@ -35,6 +36,7 @@ type AppFixtures = {
   e2eContext: E2ETestContext
   authApi: AuthApiClient
   catalogosApi: CatalogosApiClient
+  gastosApi: GastosApiClient
   gastosUnicosApi: GastosUnicosApiClient
   ingresosUnicosApi: IngresosUnicosApiClient
   protectedResourcesApi: ProtectedResourcesApiClient
@@ -82,6 +84,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   catalogosApi: async ({ request, e2eContext }, use) => {
     await use(new CatalogosApiClient(request, e2eContext))
+  },
+
+  gastosApi: async ({ request, e2eContext }, use) => {
+    await use(new GastosApiClient(request, e2eContext))
   },
 
   gastosUnicosApi: async ({ request, e2eContext }, use) => {
