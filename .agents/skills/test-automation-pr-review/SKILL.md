@@ -31,6 +31,9 @@ Run this skill before push/PR, or whenever the user asks for a review of automat
 - New tests and API client methods must preserve E2E observability metadata:
   `x-e2e-test-run-id`, `x-e2e-correlation-id`, `x-e2e-flow-id`, `CF-*` flow ids,
   and `E2E-` data prefixes through shared fixtures/helpers.
+- Product inconsistencies discovered while writing tests must be called out and,
+  when confirmed, recorded in `docs/analysis/known-defects.md`. Tests should
+  represent expected behavior, not broken current behavior.
 - Prefer accessible Playwright locators.
 - Avoid sleeps, `networkidle`, duplicated selectors, hardcoded credentials, hardcoded catalog IDs, and mutation against production.
 - Playwright agent-generated code is draft code until adapted to this framework.
