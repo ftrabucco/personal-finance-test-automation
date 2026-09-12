@@ -42,6 +42,12 @@ export class GastosUnicosApiClient extends BaseApiClient {
     })
   }
 
+  async listWithoutToken(metadata?: E2EMetadata) {
+    return this.request.get(this.apiUrl('/gastos-unicos'), {
+      headers: this.headers(undefined, metadata),
+    })
+  }
+
   async getById(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl(`/gastos-unicos/${id}`), {
       headers: this.authHeaders(token, metadata),
