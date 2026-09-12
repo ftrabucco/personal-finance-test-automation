@@ -36,6 +36,11 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
     {
+      name: 'agent-seed',
+      testMatch: /tests\/seed\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
       name: 'firefox',
       testMatch: /tests\/ui\/.*\.spec\.ts/,
       use: { ...devices['Desktop Firefox'] },

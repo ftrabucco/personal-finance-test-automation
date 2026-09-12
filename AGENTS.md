@@ -17,3 +17,9 @@
 - Prefer environment-specific credentials: `E2E_STAGING_USER_*` and `E2E_PROD_USER_*`.
 - Staging API endpoint: `https://api-test.178-156-224-127.sslip.io/api`.
 - Production frontend endpoint: `https://personal-finance-frontend-pied.vercel.app`.
+
+## Pre-PR Review
+
+- Before pushing or opening a PR, run the local `test-automation-pr-review` skill when review scope includes framework, test, fixture, POM, API client, builder, config, or CI changes.
+- Use `docs/strategy/pr-review-checklist.md` as the visible review standard.
+- Generated Playwright agent output must be reviewed and adapted to the framework before commit.
