@@ -59,6 +59,22 @@ export class IngresosPage extends BasePage {
     await expect(dialog).not.toBeVisible()
   }
 
+  async submitIngresoUnicoForm() {
+    await this.ingresoUnicoDialog().getByRole('button', { name: 'Guardar' }).click()
+  }
+
+  async expectIngresoUnicoValidationErrors() {
+    const dialog = this.ingresoUnicoDialog()
+
+    await expect(dialog.getByText('La descripción es requerida')).toBeVisible()
+    await expect(dialog.getByText('El monto debe ser mayor a 0')).toBeVisible()
+    await expect(dialog.getByText('La fuente de ingreso es requerida')).toBeVisible()
+  }
+
+  async expectIngresoUnicoDialogVisible() {
+    await expect(this.ingresoUnicoDialog()).toBeVisible()
+  }
+
   async expectIngresoVisible(descripcion: string) {
     await expect(this.ingresoItem(descripcion)).toBeVisible()
   }

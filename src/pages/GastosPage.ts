@@ -65,6 +65,24 @@ export class GastosPage extends BasePage {
     await expect(dialog).not.toBeVisible()
   }
 
+  async submitGastoUnicoForm() {
+    await this.gastoUnicoDialog().getByRole('button', { name: 'Guardar' }).click()
+  }
+
+  async expectGastoUnicoValidationErrors() {
+    const dialog = this.gastoUnicoDialog()
+
+    await expect(dialog.getByText('La descripción es requerida')).toBeVisible()
+    await expect(dialog.getByText('El monto debe ser mayor a 0')).toBeVisible()
+    await expect(dialog.getByText('La categoría es requerida')).toBeVisible()
+    await expect(dialog.getByText('La importancia es requerida')).toBeVisible()
+    await expect(dialog.getByText('El tipo de pago es requerido')).toBeVisible()
+  }
+
+  async expectGastoUnicoDialogVisible() {
+    await expect(this.gastoUnicoDialog()).toBeVisible()
+  }
+
   async expectGastoVisible(descripcion: string) {
     await expect(this.gastoItem(descripcion)).toBeVisible()
   }
