@@ -73,6 +73,13 @@ When Playwright agents or seed behavior changes:
 npm run test:agent-seed
 ```
 
+## Product Defects
+
+- If automation revealed frontend/backend/API inconsistency, the defect is recorded in `docs/analysis/known-defects.md`.
+- Tests must assert the expected product behavior, not normalize broken behavior.
+- Failing or skipped tests for known bugs include a bug id and clear expected behavior.
+- Defects small enough to fix immediately should be fixed in the product repo and covered by the automation test.
+
 ## Review Output
 
 A review should report:
