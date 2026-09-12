@@ -3,6 +3,7 @@ import { AuthApiClient } from '@api/auth.api'
 import { CatalogosApiClient } from '@api/catalogos.api'
 import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
+import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
 import { GastoUnicoBuilder } from '@builders/GastoUnicoBuilder'
 import { IngresoUnicoBuilder } from '@builders/IngresoUnicoBuilder'
 import { getEnvironmentConfig, requireTestUser } from '@config/environment'
@@ -36,6 +37,7 @@ type AppFixtures = {
   catalogosApi: CatalogosApiClient
   gastosUnicosApi: GastosUnicosApiClient
   ingresosUnicosApi: IngresosUnicosApiClient
+  protectedResourcesApi: ProtectedResourcesApiClient
   gastoUnicoBuilder: GastoUnicoBuilder
   ingresoUnicoBuilder: IngresoUnicoBuilder
   authSession: AuthSession
@@ -88,6 +90,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   ingresosUnicosApi: async ({ request, e2eContext }, use) => {
     await use(new IngresosUnicosApiClient(request, e2eContext))
+  },
+
+  protectedResourcesApi: async ({ request, e2eContext }, use) => {
+    await use(new ProtectedResourcesApiClient(request, e2eContext))
   },
 
   gastoUnicoBuilder: async ({}, use) => {

@@ -61,6 +61,30 @@ solo con `ALLOW_DESTRUCTIVE_TESTS=true`.
 - Cuando un test falle, los artifacts de Playwright ayudan a diagnosticar sin
   depender de datos productivos.
 
+## Builders de gastos
+
+Los gastos no deben modelarse con un unico builder generico. Aunque compartan
+campos como descripcion, monto, categoria, importancia, tipo de pago y moneda,
+cada tipo tiene contrato, efectos secundarios y riesgos distintos.
+
+Builders recomendados:
+
+- `GastoUnicoBuilder`: gasto simple creado directamente por `/gastos-unicos`.
+- `CompraBuilder`: compra en cuotas creada por `/compras`.
+- `GastoRecurrenteBuilder`: definicion programada creada por
+  `/gastos-recurrentes`.
+- `DebitoAutomaticoBuilder`: definicion programada creada por
+  `/debitos-automaticos`.
+
+Los flujos de compras en cuotas, gastos recurrentes y debitos automaticos
+requieren diseño propio porque dependen de fechas, vencimientos, frecuencia,
+idempotencia de procesamiento, tarjetas/cuentas y cleanup mas cuidadoso. No
+deben agregarse como variantes dentro de `GastoUnicoBuilder`.
+
+Cuando estos builders se implementen, pueden compartir una capa comun liviana
+para datos transversales de gasto, pero cada builder debe exponer solo los
+campos validos para su endpoint.
+
 ## Cleanup
 
 La limpieza debe ocurrir en un bloque `finally` cuando el test crea datos. Para
@@ -89,5 +113,6 @@ exige `ALLOW_DESTRUCTIVE_TESTS=true` para staging/local.
 
 ## Estado
 
-Definicion inicial lista. Falta incorporar factories para variantes mas
-complejas y un reset/seed reproducible del ambiente staging.
+Definicion inicial lista. Falta incorporar builders/factories para compras en
+cuotas, gastos recurrentes y debitos automaticos, ademas de un reset/seed
+reproducible del ambiente staging.

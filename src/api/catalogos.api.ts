@@ -34,6 +34,12 @@ export class CatalogosApiClient extends BaseApiClient {
     })
   }
 
+  async getAllWithoutToken(metadata?: E2EMetadata) {
+    return this.request.get(this.apiUrl('/catalogos'), {
+      headers: this.headers(undefined, metadata),
+    })
+  }
+
   async getCategorias(token: string, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/catalogos/categorias'), {
       headers: this.authHeaders(token, metadata),
