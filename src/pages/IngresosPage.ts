@@ -44,7 +44,7 @@ export class IngresosPage extends BasePage {
       await dialog.getByRole('button', { name: data.moneda_origen }).click()
     }
 
-    await this.selectSearchableOption(0, options.fuenteIngreso)
+    await this.selectSearchableOption(dialog, 0, options.fuenteIngreso)
 
     await Promise.all([
       this.page.waitForResponse(
@@ -57,6 +57,22 @@ export class IngresosPage extends BasePage {
     ])
 
     await expect(dialog).not.toBeVisible()
+  }
+
+  async submitIngresoUnicoForm() {
+    await this.ingresoUnicoDialog().getByRole('button', { name: 'Guardar' }).click()
+  }
+
+  async expectIngresoUnicoValidationErrors() {
+    const dialog = this.ingresoUnicoDialog()
+
+    await expect(dialog.getByText('La descripción es requerida')).toBeVisible()
+    await expect(dialog.getByText('El monto debe ser mayor a 0')).toBeVisible()
+    await expect(dialog.getByText('La fuente de ingreso es requerida')).toBeVisible()
+  }
+
+  async expectIngresoUnicoDialogVisible() {
+    await expect(this.ingresoUnicoDialog()).toBeVisible()
   }
 
   async expectIngresoVisible(descripcion: string) {
@@ -90,10 +106,5 @@ export class IngresosPage extends BasePage {
 
   private ingresoItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
-  }
-
-  private async selectSearchableOption(index: number, optionName: string) {
-    await this.ingresoUnicoDialog().getByRole('combobox').nth(index).click()
-    await this.page.getByRole('option', { name: optionName, exact: true }).click()
   }
 }

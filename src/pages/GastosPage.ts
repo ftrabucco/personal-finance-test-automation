@@ -47,10 +47,10 @@ export class GastosPage extends BasePage {
       await dialog.getByRole('button', { name: data.moneda_origen }).click()
     }
 
-    await this.selectSearchableOption(0, options.categoria)
-    await this.selectSearchableOption(1, options.importancia)
-    await this.selectSearchableOption(2, options.tipoPago)
-    await this.selectSearchableOption(3, 'Sin tarjeta')
+    await this.selectSearchableOption(dialog, 0, options.categoria)
+    await this.selectSearchableOption(dialog, 1, options.importancia)
+    await this.selectSearchableOption(dialog, 2, options.tipoPago)
+    await this.selectSearchableOption(dialog, 3, 'Sin tarjeta')
 
     const [response] = await Promise.all([
       this.page.waitForResponse(
@@ -63,6 +63,24 @@ export class GastosPage extends BasePage {
 
     expect(response.ok(), await response.text()).toBeTruthy()
     await expect(dialog).not.toBeVisible()
+  }
+
+  async submitGastoUnicoForm() {
+    await this.gastoUnicoDialog().getByRole('button', { name: 'Guardar' }).click()
+  }
+
+  async expectGastoUnicoValidationErrors() {
+    const dialog = this.gastoUnicoDialog()
+
+    await expect(dialog.getByText('La descripción es requerida')).toBeVisible()
+    await expect(dialog.getByText('El monto debe ser mayor a 0')).toBeVisible()
+    await expect(dialog.getByText('La categoría es requerida')).toBeVisible()
+    await expect(dialog.getByText('La importancia es requerida')).toBeVisible()
+    await expect(dialog.getByText('El tipo de pago es requerido')).toBeVisible()
+  }
+
+  async expectGastoUnicoDialogVisible() {
+    await expect(this.gastoUnicoDialog()).toBeVisible()
   }
 
   async expectGastoVisible(descripcion: string) {
@@ -96,10 +114,5 @@ export class GastosPage extends BasePage {
 
   private gastoItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
-  }
-
-  private async selectSearchableOption(index: number, optionName: string) {
-    await this.gastoUnicoDialog().getByRole('combobox').nth(index).click()
-    await this.page.getByRole('option', { name: optionName, exact: true }).click()
   }
 }

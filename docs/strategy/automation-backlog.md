@@ -18,10 +18,10 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 ## P0 - Critical Coverage
 
 - [x] Add UI P0 flow for unique income create/delete.
-- [ ] Add UI P0 flow for expense validation errors.
-- [ ] Add UI P0 flow for income validation errors.
-- [ ] Add API cleanup helpers by description or E2E prefix.
-- [ ] Add reusable catalog selector helper for forms.
+- [x] Add UI P0 flow for expense validation errors.
+- [x] Add UI P0 flow for income validation errors.
+- [x] Add API cleanup helpers by description or E2E prefix.
+- [x] Add reusable catalog selector helper for forms.
 - [x] Add GitHub Actions for contract and smoke tests.
 - [x] Add manual GitHub Actions workflow for staging destructive tests.
 
