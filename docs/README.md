@@ -17,6 +17,7 @@ docs/
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── automation-backlog.md
+│   ├── e2e-observability.md
 │   ├── github-actions.md
 │   ├── git-strategy.md
 │   ├── pr-review-checklist.md
@@ -42,6 +43,9 @@ El backlog de cobertura y madurez del framework se encuentra en
 
 La configuracion de GitHub Actions se encuentra en
 [`strategy/github-actions.md`](strategy/github-actions.md).
+
+La convencion de metadata E2E se encuentra en
+[`strategy/e2e-observability.md`](strategy/e2e-observability.md).
 
 ## Flujo de trabajo
 

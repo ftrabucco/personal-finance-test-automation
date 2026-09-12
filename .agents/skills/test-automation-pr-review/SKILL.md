@@ -28,6 +28,9 @@ Run this skill before push/PR, or whenever the user asks for a review of automat
 - Tests should express business intent and delegate mechanics to Page Objects, fixtures, API clients, builders, and assertion helpers.
 - Destructive tests must be blocked in production and require explicit opt-in.
 - Cleanup must be deterministic and robust if assertions fail mid-test.
+- New tests and API client methods must preserve E2E observability metadata:
+  `x-e2e-test-run-id`, `x-e2e-correlation-id`, `x-e2e-flow-id`, `CF-*` flow ids,
+  and `E2E-` data prefixes through shared fixtures/helpers.
 - Prefer accessible Playwright locators.
 - Avoid sleeps, `networkidle`, duplicated selectors, hardcoded credentials, hardcoded catalog IDs, and mutation against production.
 - Playwright agent-generated code is draft code until adapted to this framework.

@@ -9,6 +9,7 @@ test.describe('Ingresos unicos API destructive @destructive @api @ingresos @P0',
   test('CF-INC-001 creates, verifies and cleans up an ingreso unico', async ({
     authSession,
     catalogosApi,
+    e2eContext,
     ingresosUnicosApi,
     ingresoUnicoBuilder,
   }) => {
@@ -23,7 +24,10 @@ test.describe('Ingresos unicos API destructive @destructive @api @ingresos @P0',
 
       expect(fuenteIngreso?.id).toBeTruthy()
 
-      const ingreso = ingresoUnicoBuilder.withFuenteIngresoId(fuenteIngreso!.id).build()
+      const ingreso = ingresoUnicoBuilder
+        .withDescripcion(e2eContext.entityName('Ingreso-Unico-API'))
+        .withFuenteIngresoId(fuenteIngreso!.id)
+        .build()
 
       const createResponse = await ingresosUnicosApi.create(authSession.token, ingreso)
       const createBody = await expectSuccessfulResponse(createResponse)

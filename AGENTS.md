@@ -23,3 +23,4 @@
 - Before pushing or opening a PR, run the local `test-automation-pr-review` skill when review scope includes framework, test, fixture, POM, API client, builder, config, or CI changes.
 - Use `docs/strategy/pr-review-checklist.md` as the visible review standard.
 - Generated Playwright agent output must be reviewed and adapted to the framework before commit.
+- New tests and API client methods must preserve E2E observability metadata through shared fixtures/helpers: `x-e2e-test-run-id`, `x-e2e-correlation-id`, `x-e2e-flow-id`, `CF-*` flow ids, and `E2E-` data names.

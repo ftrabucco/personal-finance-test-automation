@@ -9,6 +9,7 @@ test.describe('Gastos unicos API destructive @destructive @api @gastos @P0', () 
   test('CF-EXP-001 creates, verifies and cleans up a gasto unico', async ({
     authSession,
     catalogosApi,
+    e2eContext,
     gastosUnicosApi,
     gastoUnicoBuilder,
   }) => {
@@ -29,6 +30,7 @@ test.describe('Gastos unicos API destructive @destructive @api @gastos @P0', () 
       expect(tipoPago?.id).toBeTruthy()
 
       const gasto = gastoUnicoBuilder
+        .withDescripcion(e2eContext.entityName('Gasto-Unico-API'))
         .withCatalogos({
           categoria_gasto_id: categoria!.id,
           importancia_gasto_id: importancia!.id,

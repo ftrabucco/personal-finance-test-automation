@@ -29,7 +29,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 - [ ] Add test tagging strategy documentation.
 - [ ] Add flaky test policy and quarantine process.
-- [ ] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
+- [x] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
 - [ ] Add test data factory layer for UI flows.
 - [ ] Add per-suite validation matrix in docs.
 - [ ] Add richer assertions helpers for UI and API responses.
@@ -59,14 +59,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 ## P2 - AI Quality Orchestration
 
-- [ ] Add `TEST_RUN_ID` generation per Playwright execution.
-- [ ] Add per-test correlation metadata helper.
-- [ ] Send E2E metadata headers from API clients:
+- [x] Add `TEST_RUN_ID` generation per Playwright execution.
+- [x] Add per-test correlation metadata helper.
+- [x] Send E2E metadata headers from API clients:
   - `x-e2e-test-run-id`
   - `x-e2e-correlation-id`
   - `x-e2e-flow-id`
-- [ ] Add E2E entity naming convention for created data, e.g. `E2E-CF-EXP-001-<timestamp>`.
-- [ ] Attach E2E metadata to Playwright test output on failure.
+- [x] Add E2E entity naming convention for created data, e.g. `E2E-CF-EXP-001-<timestamp>`.
+- [x] Attach E2E metadata to Playwright test output on failure.
 - [ ] Capture Playwright failure artifacts into a triage-friendly folder.
 - [ ] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
 - [ ] Add staging backend log capture by time window or correlation id.

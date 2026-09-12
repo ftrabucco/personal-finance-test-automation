@@ -15,6 +15,7 @@ test.describe('Gastos unicos UI destructive @destructive @ui @gastos @P0', () =>
     authenticatedPage,
     authSession,
     catalogosApi,
+    e2eContext,
     gastosUnicosApi,
     gastoUnicoBuilder,
     gastosPage,
@@ -41,7 +42,7 @@ test.describe('Gastos unicos UI destructive @destructive @ui @gastos @P0', () =>
     expect(tipoPagoNombre).toBeTruthy()
 
     const gasto = gastoUnicoBuilder
-      .withDescripcion(`E2E-UI-Gasto-Unico-${Date.now()}`)
+      .withDescripcion(e2eContext.entityName('Gasto-Unico-UI'))
       .withCatalogos({
         categoria_gasto_id: categoria!.id,
         importancia_gasto_id: importancia!.id,

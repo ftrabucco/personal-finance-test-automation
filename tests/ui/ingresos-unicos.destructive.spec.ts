@@ -15,6 +15,7 @@ test.describe('Ingresos unicos UI destructive @destructive @ui @ingresos @P0', (
     authenticatedPage,
     authSession,
     catalogosApi,
+    e2eContext,
     ingresosUnicosApi,
     ingresoUnicoBuilder,
     ingresosPage,
@@ -31,7 +32,7 @@ test.describe('Ingresos unicos UI destructive @destructive @ui @ingresos @P0', (
     expect(fuenteIngreso?.nombre).toBeTruthy()
 
     const ingreso = ingresoUnicoBuilder
-      .withDescripcion(`E2E-UI-Ingreso-Unico-${Date.now()}`)
+      .withDescripcion(e2eContext.entityName('Ingreso-Unico-UI'))
       .withFuenteIngresoId(fuenteIngreso!.id)
       .build()
 

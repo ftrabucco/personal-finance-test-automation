@@ -26,6 +26,14 @@ Use this checklist before pushing commits or opening a pull request for this aut
 - UI destructive tests should normally run once in Chromium unless cross-browser mutation is explicitly needed.
 - Staging/local data created by tests must be clearly identifiable, preferably with an `E2E-` prefix.
 
+## Observability
+
+- Tests that map to critical flows include the `CF-*` flow id in the test title.
+- New tests use the shared fixtures so API and UI requests send `x-e2e-test-run-id`, `x-e2e-correlation-id`, and `x-e2e-flow-id`.
+- API clients preserve E2E metadata headers when adding or changing methods.
+- Data created by automated tests uses `e2eContext.entityName(...)` or an equivalent shared helper.
+- Generated Playwright agent code is refactored before commit if it bypasses E2E metadata, fixtures, or data naming rules.
+
 ## Playwright Quality
 
 - Prefer accessible locators: `getByRole`, `getByLabel`, `getByPlaceholder`, visible text.
