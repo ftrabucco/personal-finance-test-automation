@@ -28,6 +28,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 - [ ] Add test tagging strategy documentation.
 - [ ] Add flaky test policy and quarantine process.
+- [ ] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
 - [ ] Add test data factory layer for UI flows.
 - [ ] Add per-suite validation matrix in docs.
 - [ ] Add richer assertions helpers for UI and API responses.
@@ -54,6 +55,54 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [ ] Add test coverage dashboard or markdown status table.
 - [ ] Add nightly schedule for cross-browser UI smoke.
 - [ ] Add release checklist for automation changes.
+
+## P2 - AI Quality Orchestration
+
+- [ ] Add `TEST_RUN_ID` generation per Playwright execution.
+- [ ] Add per-test correlation metadata helper.
+- [ ] Send E2E metadata headers from API clients:
+  - `x-e2e-test-run-id`
+  - `x-e2e-correlation-id`
+  - `x-e2e-flow-id`
+- [ ] Add E2E entity naming convention for created data, e.g. `E2E-CF-EXP-001-<timestamp>`.
+- [ ] Attach E2E metadata to Playwright test output on failure.
+- [ ] Capture Playwright failure artifacts into a triage-friendly folder.
+- [ ] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
+- [ ] Add staging backend log capture by time window or correlation id.
+- [ ] Correlate failed test artifacts with backend logs.
+- [ ] Classify failures as app bug, test bug, data issue, environment issue, or infrastructure issue.
+- [ ] Generate a ticket-ready regression summary.
+- [ ] Optional later: create GitHub issue automatically after manual approval.
+
+## E2E Metadata Convention
+
+- **Test run id:** identifies one full execution, for example `e2e-2026-09-11-153000`.
+- **Correlation id:** identifies one test case or operation inside the run, for example `CF-EXP-001-abc123`.
+- **Flow id:** stores the business/test flow, for example `CF-EXP-001`.
+- **Entity prefix:** goes into data created by tests, usually in user-visible fields like `descripcion`.
+- **Timestamps:** should exist in Playwright output and backend logs using consistent ISO format where possible.
+
+Recommended request headers for API clients and UI-triggered requests when supported:
+
+```text
+x-e2e-test-run-id: e2e-2026-09-11-153000
+x-e2e-correlation-id: CF-EXP-001-abc123
+x-e2e-flow-id: CF-EXP-001
+```
+
+Recommended entity naming:
+
+```text
+E2E-CF-EXP-001-20260911-153000-gasto-supermercado
+```
+
+These identifiers should make it possible for an AI triage process to connect:
+
+- Playwright test failure.
+- Test data created during the run.
+- API request/response logs.
+- Backend application logs.
+- Staging environment health.
 
 ## How To Use Playwright Agents
 
