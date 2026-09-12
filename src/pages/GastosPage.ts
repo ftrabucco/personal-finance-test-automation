@@ -50,17 +50,18 @@ export class GastosPage extends BasePage {
     await this.selectSearchableOption(0, options.categoria)
     await this.selectSearchableOption(1, options.importancia)
     await this.selectSearchableOption(2, options.tipoPago)
+    await this.selectSearchableOption(3, 'Sin tarjeta')
 
-    await Promise.all([
+    const [response] = await Promise.all([
       this.page.waitForResponse(
         (response) =>
           response.url().includes('/gastos-unicos') &&
-          response.request().method() === 'POST' &&
-          response.ok(),
+          response.request().method() === 'POST',
       ),
       dialog.getByRole('button', { name: 'Guardar' }).click(),
     ])
 
+    expect(response.ok(), await response.text()).toBeTruthy()
     await expect(dialog).not.toBeVisible()
   }
 

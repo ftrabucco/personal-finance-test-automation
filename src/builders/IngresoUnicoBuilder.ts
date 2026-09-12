@@ -1,14 +1,14 @@
 import type { IngresoUnicoRequest } from '@api/ingresos-unicos.api'
 
-function todayAsIsoDate() {
-  return new Date().toISOString().slice(0, 10)
+function safePastIsoDate() {
+  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 }
 
 export class IngresoUnicoBuilder {
   private data: Partial<IngresoUnicoRequest> = {
     descripcion: `E2E-Ingreso-Unico-${Date.now()}`,
     monto: 500,
-    fecha: todayAsIsoDate(),
+    fecha: safePastIsoDate(),
     moneda_origen: 'ARS',
   }
 
