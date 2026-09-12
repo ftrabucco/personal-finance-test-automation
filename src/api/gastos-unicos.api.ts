@@ -60,4 +60,36 @@ export class GastosUnicosApiClient extends BaseApiClient {
       headers: this.authHeaders(token, metadata),
     })
   }
+
+  async findIdsByDescription(token: string, descripcion: string, metadata?: E2EMetadata) {
+    const response = await this.list(token, metadata)
+    const body = (await response.json()) as GastoUnicoListResponse
+
+    return extractGastos(body)
+      .filter((gasto) => gasto.descripcion === descripcion)
+      .map((gasto) => gasto.id)
+  }
+
+  async findIdsByDescriptionPrefix(token: string, prefix: string, metadata?: E2EMetadata) {
+    const response = await this.list(token, metadata)
+    const body = (await response.json()) as GastoUnicoListResponse
+
+    return extractGastos(body)
+      .filter((gasto) => gasto.descripcion.startsWith(prefix))
+      .map((gasto) => gasto.id)
+  }
+
+  async deleteMany(token: string, ids: number[], metadata?: E2EMetadata) {
+    return Promise.all(ids.map((id) => this.delete(token, id, metadata)))
+  }
+}
+
+export function extractGastos(body: GastoUnicoListResponse): GastoUnicoResponseItem[] {
+  const data = body.data
+
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  return data?.gastos ?? []
 }

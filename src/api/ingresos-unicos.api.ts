@@ -56,4 +56,36 @@ export class IngresosUnicosApiClient extends BaseApiClient {
       headers: this.authHeaders(token, metadata),
     })
   }
+
+  async findIdsByDescription(token: string, descripcion: string, metadata?: E2EMetadata) {
+    const response = await this.list(token, metadata)
+    const body = (await response.json()) as IngresoUnicoListResponse
+
+    return extractIngresos(body)
+      .filter((ingreso) => ingreso.descripcion === descripcion)
+      .map((ingreso) => ingreso.id)
+  }
+
+  async findIdsByDescriptionPrefix(token: string, prefix: string, metadata?: E2EMetadata) {
+    const response = await this.list(token, metadata)
+    const body = (await response.json()) as IngresoUnicoListResponse
+
+    return extractIngresos(body)
+      .filter((ingreso) => ingreso.descripcion.startsWith(prefix))
+      .map((ingreso) => ingreso.id)
+  }
+
+  async deleteMany(token: string, ids: number[], metadata?: E2EMetadata) {
+    return Promise.all(ids.map((id) => this.delete(token, id, metadata)))
+  }
+}
+
+export function extractIngresos(body: IngresoUnicoListResponse): IngresoUnicoResponseItem[] {
+  const data = body.data
+
+  if (Array.isArray(data)) {
+    return data
+  }
+
+  return data?.ingresos ?? []
 }

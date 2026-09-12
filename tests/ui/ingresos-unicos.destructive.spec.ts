@@ -2,11 +2,6 @@ import { test, expect } from '@fixtures/test'
 import { expectSuccessfulResponse } from '@assertions/apiAssertions'
 import { isDestructiveTestsAllowed, requireDestructiveTestsAllowed } from '@config/safety'
 import type { CatalogosResponse } from '@api/catalogos.api'
-import type {
-  IngresoUnicoListResponse,
-  IngresoUnicoResponseItem,
-  IngresosUnicosApiClient,
-} from '@api/ingresos-unicos.api'
 
 test.describe('Ingresos unicos UI destructive @destructive @ui @ingresos @P0', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')
@@ -50,50 +45,20 @@ test.describe('Ingresos unicos UI destructive @destructive @ui @ingresos @P0', (
 
       await ingresosPage.expectIngresoVisible(ingreso.descripcion)
 
-      createdIds = await findIngresoIdsByDescription(
-        ingresosUnicosApi,
-        authSession.token,
-        ingreso.descripcion,
-      )
+      createdIds = await ingresosUnicosApi.findIdsByDescription(authSession.token, ingreso.descripcion)
       expect(createdIds.length).toBeGreaterThan(0)
 
       await ingresosPage.deleteIngreso(ingreso.descripcion)
       await ingresosPage.expectIngresoNotVisible(ingreso.descripcion)
 
-      createdIds = await findIngresoIdsByDescription(
-        ingresosUnicosApi,
-        authSession.token,
-        ingreso.descripcion,
-      )
+      createdIds = await ingresosUnicosApi.findIdsByDescription(authSession.token, ingreso.descripcion)
       expect(createdIds).toHaveLength(0)
     } finally {
-      for (const id of createdIds) {
-        const deleteResponse = await ingresosUnicosApi.delete(authSession.token, id)
+      const deleteResponses = await ingresosUnicosApi.deleteMany(authSession.token, createdIds)
+
+      for (const deleteResponse of deleteResponses) {
         await expectSuccessfulResponse(deleteResponse)
       }
     }
   })
 })
-
-async function findIngresoIdsByDescription(
-  ingresosUnicosApi: IngresosUnicosApiClient,
-  token: string,
-  descripcion: string,
-) {
-  const listResponse = await ingresosUnicosApi.list(token)
-  const listBody = (await expectSuccessfulResponse(listResponse)) as IngresoUnicoListResponse
-
-  return extractIngresos(listBody)
-    .filter((ingreso) => ingreso.descripcion === descripcion)
-    .map((ingreso) => ingreso.id)
-}
-
-function extractIngresos(body: IngresoUnicoListResponse): IngresoUnicoResponseItem[] {
-  const data = body.data
-
-  if (Array.isArray(data)) {
-    return data
-  }
-
-  return data?.ingresos ?? []
-}

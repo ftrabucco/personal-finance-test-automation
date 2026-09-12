@@ -2,11 +2,6 @@ import { test, expect } from '@fixtures/test'
 import { expectSuccessfulResponse } from '@assertions/apiAssertions'
 import { isDestructiveTestsAllowed, requireDestructiveTestsAllowed } from '@config/safety'
 import type { CatalogosResponse } from '@api/catalogos.api'
-import type {
-  GastoUnicoListResponse,
-  GastoUnicoResponseItem,
-  GastosUnicosApiClient,
-} from '@api/gastos-unicos.api'
 
 test.describe('Gastos unicos UI destructive @destructive @ui @gastos @P0', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')
@@ -66,50 +61,20 @@ test.describe('Gastos unicos UI destructive @destructive @ui @gastos @P0', () =>
 
       await gastosPage.expectGastoVisible(gasto.descripcion)
 
-      createdIds = await findGastoIdsByDescription(
-        gastosUnicosApi,
-        authSession.token,
-        gasto.descripcion,
-      )
+      createdIds = await gastosUnicosApi.findIdsByDescription(authSession.token, gasto.descripcion)
       expect(createdIds.length).toBeGreaterThan(0)
 
       await gastosPage.deleteGasto(gasto.descripcion)
       await gastosPage.expectGastoNotVisible(gasto.descripcion)
 
-      createdIds = await findGastoIdsByDescription(
-        gastosUnicosApi,
-        authSession.token,
-        gasto.descripcion,
-      )
+      createdIds = await gastosUnicosApi.findIdsByDescription(authSession.token, gasto.descripcion)
       expect(createdIds).toHaveLength(0)
     } finally {
-      for (const id of createdIds) {
-        const deleteResponse = await gastosUnicosApi.delete(authSession.token, id)
+      const deleteResponses = await gastosUnicosApi.deleteMany(authSession.token, createdIds)
+
+      for (const deleteResponse of deleteResponses) {
         await expectSuccessfulResponse(deleteResponse)
       }
     }
   })
 })
-
-async function findGastoIdsByDescription(
-  gastosUnicosApi: GastosUnicosApiClient,
-  token: string,
-  descripcion: string,
-) {
-  const listResponse = await gastosUnicosApi.list(token)
-  const listBody = (await expectSuccessfulResponse(listResponse)) as GastoUnicoListResponse
-
-  return extractGastos(listBody)
-    .filter((gasto) => gasto.descripcion === descripcion)
-    .map((gasto) => gasto.id)
-}
-
-function extractGastos(body: GastoUnicoListResponse) {
-  const data = body.data
-
-  if (Array.isArray(data)) {
-    return data
-  }
-
-  return data?.gastos ?? []
-}

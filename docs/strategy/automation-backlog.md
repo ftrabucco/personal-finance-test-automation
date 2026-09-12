@@ -20,8 +20,8 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add UI P0 flow for unique income create/delete.
 - [x] Add UI P0 flow for expense validation errors.
 - [x] Add UI P0 flow for income validation errors.
-- [ ] Add API cleanup helpers by description or E2E prefix.
-- [ ] Add reusable catalog selector helper for forms.
+- [x] Add API cleanup helpers by description or E2E prefix.
+- [x] Add reusable catalog selector helper for forms.
 - [x] Add GitHub Actions for contract and smoke tests.
 - [x] Add manual GitHub Actions workflow for staging destructive tests.
 

@@ -47,10 +47,10 @@ export class GastosPage extends BasePage {
       await dialog.getByRole('button', { name: data.moneda_origen }).click()
     }
 
-    await this.selectSearchableOption(0, options.categoria)
-    await this.selectSearchableOption(1, options.importancia)
-    await this.selectSearchableOption(2, options.tipoPago)
-    await this.selectSearchableOption(3, 'Sin tarjeta')
+    await this.selectSearchableOption(dialog, 0, options.categoria)
+    await this.selectSearchableOption(dialog, 1, options.importancia)
+    await this.selectSearchableOption(dialog, 2, options.tipoPago)
+    await this.selectSearchableOption(dialog, 3, 'Sin tarjeta')
 
     const [response] = await Promise.all([
       this.page.waitForResponse(
@@ -114,10 +114,5 @@ export class GastosPage extends BasePage {
 
   private gastoItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
-  }
-
-  private async selectSearchableOption(index: number, optionName: string) {
-    await this.gastoUnicoDialog().getByRole('combobox').nth(index).click()
-    await this.page.getByRole('option', { name: optionName, exact: true }).click()
   }
 }
