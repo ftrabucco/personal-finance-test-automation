@@ -5,15 +5,15 @@ type CatalogoIds = Pick<
   'categoria_gasto_id' | 'importancia_gasto_id' | 'tipo_pago_id'
 >
 
-function todayAsIsoDate() {
-  return new Date().toISOString().slice(0, 10)
+function safePastIsoDate() {
+  return new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
 }
 
 export class GastoUnicoBuilder {
   private data: Partial<GastoUnicoRequest> = {
     descripcion: `E2E-Gasto-Unico-${Date.now()}`,
     monto: 150,
-    fecha: todayAsIsoDate(),
+    fecha: safePastIsoDate(),
     moneda_origen: 'ARS',
   }
 

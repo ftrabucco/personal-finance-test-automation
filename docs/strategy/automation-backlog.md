@@ -10,13 +10,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] API destructive tests for unique expenses and unique incomes.
 - [x] UI smoke tests for auth, dashboard, and core navigation.
 - [x] UI destructive P0 flow for unique expense create/delete in staging.
+- [x] UI destructive P0 flow for unique income create/delete in staging.
 - [x] Parallel UI execution with configurable workers.
 - [x] Pre-PR review skill and checklist.
 - [x] Playwright Agents setup with authenticated seed.
 
 ## P0 - Critical Coverage
 
-- [ ] Add UI P0 flow for unique income create/delete.
+- [x] Add UI P0 flow for unique income create/delete.
 - [ ] Add UI P0 flow for expense validation errors.
 - [ ] Add UI P0 flow for income validation errors.
 - [ ] Add API cleanup helpers by description or E2E prefix.

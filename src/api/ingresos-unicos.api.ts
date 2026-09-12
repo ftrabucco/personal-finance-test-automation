@@ -9,6 +9,23 @@ export interface IngresoUnicoRequest {
   moneda_origen?: 'ARS' | 'USD'
 }
 
+export interface IngresoUnicoResponseItem {
+  id: number
+  descripcion: string
+  monto?: number | string
+  monto_ars?: number | string
+  fecha?: string
+  fuente_ingreso_id?: number
+  moneda_origen?: 'ARS' | 'USD'
+}
+
+export interface IngresoUnicoListResponse {
+  success: boolean
+  data?: IngresoUnicoResponseItem[] | { ingresos?: IngresoUnicoResponseItem[] }
+  error?: string
+  message?: string
+}
+
 export class IngresosUnicosApiClient extends BaseApiClient {
   constructor(request: APIRequestContext) {
     super(request)
