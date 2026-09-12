@@ -24,3 +24,4 @@
 - Use `docs/strategy/pr-review-checklist.md` as the visible review standard.
 - Generated Playwright agent output must be reviewed and adapted to the framework before commit.
 - New tests and API client methods must preserve E2E observability metadata through shared fixtures/helpers: `x-e2e-test-run-id`, `x-e2e-correlation-id`, `x-e2e-flow-id`, `CF-*` flow ids, and `E2E-` data names.
+- While developing tests, report product inconsistencies found in frontend, backend, API, data, or environments. Record confirmed issues in `docs/analysis/known-defects.md` and keep tests aligned with expected behavior, even if the app currently fails.

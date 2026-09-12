@@ -11,12 +11,14 @@ docs/
 │   ├── functional-inventory.md
 │   ├── critical-flows.md
 │   ├── api-inventory.md
-│   └── coverage-matrix.md
+│   ├── coverage-matrix.md
+│   └── known-defects.md
 ├── environment/
 │   └── staging-api-environment.md
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── automation-backlog.md
+│   ├── defect-discovery-policy.md
 │   ├── e2e-observability.md
 │   ├── github-actions.md
 │   ├── git-strategy.md
@@ -46,6 +48,11 @@ La configuracion de GitHub Actions se encuentra en
 
 La convencion de metadata E2E se encuentra en
 [`strategy/e2e-observability.md`](strategy/e2e-observability.md).
+
+La politica para registrar bugs descubiertos al automatizar se encuentra en
+[`strategy/defect-discovery-policy.md`](strategy/defect-discovery-policy.md), y
+el registro vivo de defectos en
+[`analysis/known-defects.md`](analysis/known-defects.md).
 
 ## Flujo de trabajo
 
