@@ -101,3 +101,14 @@ Antes de pushear o abrir PR, usar la skill local `test-automation-pr-review` y e
 .agents/skills/test-automation-pr-review/SKILL.md
 docs/strategy/pr-review-checklist.md
 ```
+
+## GitHub Actions
+
+Configurar estos secrets en GitHub antes de ejecutar CI contra staging:
+
+```text
+E2E_STAGING_USER_EMAIL
+E2E_STAGING_USER_PASSWORD
+```
+
+Ver detalles en [`docs/strategy/github-actions.md`](docs/strategy/github-actions.md).

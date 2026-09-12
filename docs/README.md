@@ -17,6 +17,7 @@ docs/
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── automation-backlog.md
+│   ├── github-actions.md
 │   ├── git-strategy.md
 │   ├── pr-review-checklist.md
 │   ├── test-data-strategy.md
@@ -38,6 +39,9 @@ El checklist de review pre-PR se encuentra en
 
 El backlog de cobertura y madurez del framework se encuentra en
 [`strategy/automation-backlog.md`](strategy/automation-backlog.md).
+
+La configuracion de GitHub Actions se encuentra en
+[`strategy/github-actions.md`](strategy/github-actions.md).
 
 ## Flujo de trabajo
 

@@ -1,0 +1,74 @@
+name: Staging Destructive Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      suite:
+        description: Suite to run
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+
+permissions:
+  contents: read
+
+env:
+  TEST_ENV: staging
+  ALLOW_DESTRUCTIVE_TESTS: true
+  E2E_BASE_URL: https://personal-finance-frontend-staging.vercel.app
+  E2E_API_URL: https://api-test.178-156-224-127.sslip.io/api
+  E2E_STAGING_USER_EMAIL: ${{ secrets.E2E_STAGING_USER_EMAIL }}
+  E2E_STAGING_USER_PASSWORD: ${{ secrets.E2E_STAGING_USER_PASSWORD }}
+  E2E_WORKERS: 1
+
+jobs:
+  destructive:
+    name: Destructive ${{ inputs.suite }} tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run API destructive tests
+        if: ${{ inputs.suite == 'all' || inputs.suite == 'api' }}
+        run: npm run test:staging:destructive
+
+      - name: Run UI destructive tests
+        if: ${{ inputs.suite == 'all' || inputs.suite == 'ui' }}
+        run: npm run test:staging:destructive:ui
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-staging-destructive-${{ inputs.suite }}
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-staging-destructive-${{ inputs.suite }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7

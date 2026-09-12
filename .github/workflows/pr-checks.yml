@@ -1,0 +1,69 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+env:
+  TEST_ENV: staging
+  E2E_BASE_URL: https://personal-finance-frontend-staging.vercel.app
+  E2E_API_URL: https://api-test.178-156-224-127.sslip.io/api
+  E2E_STAGING_USER_EMAIL: ${{ secrets.E2E_STAGING_USER_EMAIL }}
+  E2E_STAGING_USER_PASSWORD: ${{ secrets.E2E_STAGING_USER_PASSWORD }}
+  E2E_WORKERS: 2
+
+jobs:
+  validate:
+    name: TypeScript, API Contracts, UI Smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: TypeScript check
+        run: npx tsc --noEmit
+
+      - name: API contract tests
+        run: npm run test:contract
+
+      - name: UI smoke tests
+        run: npm run test:ui:parallel
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-pr-checks
+          path: playwright-report/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload Playwright test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results-pr-checks
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7
