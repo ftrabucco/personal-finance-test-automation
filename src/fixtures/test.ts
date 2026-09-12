@@ -14,6 +14,12 @@ import { ConfiguracionPage } from '@pages/ConfiguracionPage'
 import { PerfilPage } from '@pages/PerfilPage'
 import { expectSuccessfulResponse } from '@assertions/apiAssertions'
 import type { LoginResponse } from '@api/auth.api'
+import {
+  buildE2EHeaders,
+  createE2ETestContext,
+  getTestRunId,
+  type E2ETestContext,
+} from '@utils/e2eObservability'
 
 type AuthSession = {
   token: string
@@ -25,6 +31,7 @@ type AuthSession = {
 }
 
 type AppFixtures = {
+  e2eContext: E2ETestContext
   authApi: AuthApiClient
   catalogosApi: CatalogosApiClient
   gastosUnicosApi: GastosUnicosApiClient
@@ -46,20 +53,41 @@ type WorkerFixtures = {
 }
 
 export const test = base.extend<AppFixtures, WorkerFixtures>({
-  authApi: async ({ request }, use) => {
-    await use(new AuthApiClient(request))
+  e2eContext: async ({}, use, testInfo) => {
+    const context = createE2ETestContext(testInfo)
+
+    testInfo.annotations.push(
+      { type: 'e2e:testRunId', description: context.testRunId },
+      { type: 'e2e:correlationId', description: context.correlationId },
+      { type: 'e2e:flowId', description: context.flowId },
+    )
+    await testInfo.attach('e2e-metadata', {
+      body: JSON.stringify(context, null, 2),
+      contentType: 'application/json',
+    })
+
+    await use(context)
   },
 
-  catalogosApi: async ({ request }, use) => {
-    await use(new CatalogosApiClient(request))
+  page: async ({ page, e2eContext }, use) => {
+    await page.context().setExtraHTTPHeaders(buildE2EHeaders(e2eContext))
+    await use(page)
   },
 
-  gastosUnicosApi: async ({ request }, use) => {
-    await use(new GastosUnicosApiClient(request))
+  authApi: async ({ request, e2eContext }, use) => {
+    await use(new AuthApiClient(request, e2eContext))
   },
 
-  ingresosUnicosApi: async ({ request }, use) => {
-    await use(new IngresosUnicosApiClient(request))
+  catalogosApi: async ({ request, e2eContext }, use) => {
+    await use(new CatalogosApiClient(request, e2eContext))
+  },
+
+  gastosUnicosApi: async ({ request, e2eContext }, use) => {
+    await use(new GastosUnicosApiClient(request, e2eContext))
+  },
+
+  ingresosUnicosApi: async ({ request, e2eContext }, use) => {
+    await use(new IngresosUnicosApiClient(request, e2eContext))
   },
 
   gastoUnicoBuilder: async ({}, use) => {
@@ -76,6 +104,9 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
       const user = requireTestUser()
       const request = await playwrightRequest.newContext()
       const response = await request.post(`${env.apiUrl}/auth/login`, {
+        headers: {
+          'x-e2e-test-run-id': getTestRunId(),
+        },
         data: {
           email: user.email,
           password: user.password,

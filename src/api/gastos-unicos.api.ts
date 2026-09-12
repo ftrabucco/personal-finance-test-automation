@@ -1,5 +1,6 @@
 import type { APIRequestContext } from '@playwright/test'
 import { BaseApiClient } from './BaseApiClient'
+import type { E2EMetadata } from '@utils/e2eObservability'
 
 export interface GastoUnicoRequest {
   descripcion: string
@@ -31,32 +32,32 @@ export interface GastoUnicoListResponse {
 }
 
 export class GastosUnicosApiClient extends BaseApiClient {
-  constructor(request: APIRequestContext) {
-    super(request)
+  constructor(request: APIRequestContext, defaultMetadata?: E2EMetadata) {
+    super(request, defaultMetadata)
   }
 
-  async list(token: string) {
+  async list(token: string, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/gastos-unicos'), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 
-  async getById(token: string, id: number) {
+  async getById(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl(`/gastos-unicos/${id}`), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 
-  async create(token: string, data: GastoUnicoRequest) {
+  async create(token: string, data: GastoUnicoRequest, metadata?: E2EMetadata) {
     return this.request.post(this.apiUrl('/gastos-unicos'), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
       data,
     })
   }
 
-  async delete(token: string, id: number) {
+  async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/gastos-unicos/${id}`), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 }

@@ -1,5 +1,6 @@
 import type { APIRequestContext } from '@playwright/test'
 import { BaseApiClient } from './BaseApiClient'
+import type { E2EMetadata } from '@utils/e2eObservability'
 
 export interface LoginResponse {
   success: boolean
@@ -16,23 +17,26 @@ export interface LoginResponse {
 }
 
 export class AuthApiClient extends BaseApiClient {
-  constructor(request: APIRequestContext) {
-    super(request)
+  constructor(request: APIRequestContext, defaultMetadata?: E2EMetadata) {
+    super(request, defaultMetadata)
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string, metadata?: E2EMetadata) {
     return this.request.post(this.apiUrl('/auth/login'), {
+      headers: this.headers(undefined, metadata),
       data: { email, password },
     })
   }
 
-  async getProfile(token: string) {
+  async getProfile(token: string, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/auth/profile'), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 
-  async getProfileWithoutToken() {
-    return this.request.get(this.apiUrl('/auth/profile'))
+  async getProfileWithoutToken(metadata?: E2EMetadata) {
+    return this.request.get(this.apiUrl('/auth/profile'), {
+      headers: this.headers(undefined, metadata),
+    })
   }
 }

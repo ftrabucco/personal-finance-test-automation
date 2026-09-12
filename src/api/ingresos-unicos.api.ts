@@ -1,5 +1,6 @@
 import type { APIRequestContext } from '@playwright/test'
 import { BaseApiClient } from './BaseApiClient'
+import type { E2EMetadata } from '@utils/e2eObservability'
 
 export interface IngresoUnicoRequest {
   descripcion: string
@@ -27,32 +28,32 @@ export interface IngresoUnicoListResponse {
 }
 
 export class IngresosUnicosApiClient extends BaseApiClient {
-  constructor(request: APIRequestContext) {
-    super(request)
+  constructor(request: APIRequestContext, defaultMetadata?: E2EMetadata) {
+    super(request, defaultMetadata)
   }
 
-  async list(token: string) {
+  async list(token: string, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/ingresos-unicos'), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 
-  async getById(token: string, id: number) {
+  async getById(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl(`/ingresos-unicos/${id}`), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 
-  async create(token: string, data: IngresoUnicoRequest) {
+  async create(token: string, data: IngresoUnicoRequest, metadata?: E2EMetadata) {
     return this.request.post(this.apiUrl('/ingresos-unicos'), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
       data,
     })
   }
 
-  async delete(token: string, id: number) {
+  async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/ingresos-unicos/${id}`), {
-      headers: this.authHeaders(token),
+      headers: this.authHeaders(token, metadata),
     })
   }
 }
