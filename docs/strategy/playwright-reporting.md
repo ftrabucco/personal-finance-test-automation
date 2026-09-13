@@ -71,7 +71,7 @@ La configuracion de Playwright permite ajustar artifacts con env vars:
 
 | Variable | Valores utiles | Default |
 | --- | --- | --- |
-| `E2E_TRACE` | `on`, `retain-on-failure`, `on-first-retry`, `off` | `on-first-retry` |
+| `E2E_TRACE` | `on`, `retain-on-failure`, `on-first-retry`, `off` | `retain-on-failure` |
 | `E2E_SCREENSHOT` | `on`, `only-on-failure`, `off` | `only-on-failure` |
 | `E2E_VIDEO` | `on`, `retain-on-failure`, `on-first-retry`, `off` | `retain-on-failure` |
 
