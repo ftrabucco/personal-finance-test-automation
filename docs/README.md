@@ -23,6 +23,7 @@ docs/
 │   ├── github-actions.md
 │   ├── git-strategy.md
 │   ├── flaky-test-policy.md
+│   ├── playwright-reporting.md
 │   ├── pr-review-checklist.md
 │   ├── per-suite-validation-matrix.md
 │   ├── test-tagging-strategy.md
@@ -51,6 +52,9 @@ El backlog de cobertura y madurez del framework se encuentra en
 
 La configuracion de GitHub Actions se encuentra en
 [`strategy/github-actions.md`](strategy/github-actions.md).
+
+La politica de reportes, traces, screenshots y videos se encuentra en
+[`strategy/playwright-reporting.md`](strategy/playwright-reporting.md).
 
 La estrategia de tags se encuentra en
 [`strategy/test-tagging-strategy.md`](strategy/test-tagging-strategy.md).
