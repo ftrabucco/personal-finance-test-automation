@@ -2,9 +2,11 @@ import { request as playwrightRequest, test as base, type Page } from '@playwrig
 import { AuthApiClient } from '@api/auth.api'
 import { CatalogosApiClient } from '@api/catalogos.api'
 import { GastosApiClient } from '@api/gastos.api'
+import { GastosRecurrentesApiClient } from '@api/gastos-recurrentes.api'
 import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
 import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
+import { GastoRecurrenteBuilder } from '@builders/GastoRecurrenteBuilder'
 import { GastoUnicoBuilder } from '@builders/GastoUnicoBuilder'
 import { IngresoUnicoBuilder } from '@builders/IngresoUnicoBuilder'
 import { getEnvironmentConfig, requireTestUser } from '@config/environment'
@@ -38,9 +40,11 @@ type AppFixtures = {
   authApi: AuthApiClient
   catalogosApi: CatalogosApiClient
   gastosApi: GastosApiClient
+  gastosRecurrentesApi: GastosRecurrentesApiClient
   gastosUnicosApi: GastosUnicosApiClient
   ingresosUnicosApi: IngresosUnicosApiClient
   protectedResourcesApi: ProtectedResourcesApiClient
+  gastoRecurrenteBuilder: GastoRecurrenteBuilder
   gastoUnicoBuilder: GastoUnicoBuilder
   ingresoUnicoBuilder: IngresoUnicoBuilder
   financeTestDataFactory: FinanceTestDataFactory
@@ -92,6 +96,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
     await use(new GastosApiClient(request, e2eContext))
   },
 
+  gastosRecurrentesApi: async ({ request, e2eContext }, use) => {
+    await use(new GastosRecurrentesApiClient(request, e2eContext))
+  },
+
   gastosUnicosApi: async ({ request, e2eContext }, use) => {
     await use(new GastosUnicosApiClient(request, e2eContext))
   },
@@ -102,6 +110,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   protectedResourcesApi: async ({ request, e2eContext }, use) => {
     await use(new ProtectedResourcesApiClient(request, e2eContext))
+  },
+
+  gastoRecurrenteBuilder: async ({}, use) => {
+    await use(new GastoRecurrenteBuilder())
   },
 
   gastoUnicoBuilder: async ({}, use) => {
