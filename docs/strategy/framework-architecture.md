@@ -66,6 +66,7 @@ Implementados:
 
 - `AuthApiClient`
 - `CatalogosApiClient`
+- `GastosRecurrentesApiClient`
 - `GastosUnicosApiClient`
 - `IngresosUnicosApiClient`
 
@@ -87,13 +88,14 @@ cuando el contrato evoluciona.
 
 Implementado:
 
+- `GastoRecurrenteBuilder`
 - `GastoUnicoBuilder`
 - `IngresoUnicoBuilder`
 
 Proximos candidatos:
 
 - `CompraBuilder`
-- `GastoRecurrenteBuilder`
+- `DebitoAutomaticoBuilder`
 
 ### Factory
 
@@ -118,8 +120,10 @@ Los tests reciben objetos listos para usar:
 
 - `authApi`
 - `catalogosApi`
+- `gastosRecurrentesApi`
 - `gastosUnicosApi`
 - `ingresosUnicosApi`
+- `gastoRecurrenteBuilder`
 - `gastoUnicoBuilder`
 - `ingresoUnicoBuilder`
 - `financeTestDataFactory`

@@ -15,7 +15,23 @@ by the application.
 
 ## Defects
 
-No confirmed defects recorded yet.
+## BUG-2026-001 - Creating a gasto recurrente ignores `activo: false`
+
+- Status: Open
+- Severity: Medium
+- Area: Backend API
+- Found by: `tests/api/gastos-recurrentes.destructive.spec.ts`
+- Related flow: `CF-SCH-001`
+- Evidence: `POST /gastos-recurrentes` with `activo: false` returns a created
+  definition with `activo: true`.
+- Expected: The API should preserve explicit `activo: false` when creating a
+  recurrent expense definition.
+- Actual: The create controller forces `activo: true`, overriding the request
+  body.
+- Proposed test: Add a contract/destructive API test that creates a recurrent
+  definition with `activo: false` and expects the persisted resource to remain
+  inactive after the backend is fixed.
+- Tracking: Not created yet.
 
 ## Template
 
