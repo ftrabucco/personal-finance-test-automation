@@ -29,6 +29,7 @@ Use this checklist before pushing commits or opening a pull request for this aut
 ## Observability
 
 - Tests that map to critical flows include the `CF-*` flow id in the test title.
+- New tests follow the tag convention from `test-tagging-strategy.md`: layer, suite, domain, and priority.
 - New tests use the shared fixtures so API and UI requests send `x-e2e-test-run-id`, `x-e2e-correlation-id`, and `x-e2e-flow-id`.
 - API clients preserve E2E metadata headers when adding or changing methods.
 - Data created by automated tests uses `e2eContext.entityName(...)` or an equivalent shared helper.
@@ -41,6 +42,7 @@ Use this checklist before pushing commits or opening a pull request for this aut
 - Avoid `waitForTimeout` and `networkidle`.
 - Wait on meaningful UI state or specific API responses.
 - Keep traces/videos/screenshots configured for debugging value, not noise.
+- Flaky behavior is fixed, documented as a product/environment issue, or quarantined with an explicit reason.
 - Generated Playwright agent code is treated as draft code until refactored into project patterns.
 
 ## Validation
