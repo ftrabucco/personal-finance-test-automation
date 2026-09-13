@@ -29,7 +29,8 @@ export function expectDefined<T>(
   value: T | undefined | null,
   message: string,
 ): asserts value is NonNullable<T> {
-  expect(value, message).toBeTruthy()
+  expect(value, message).not.toBeNull()
+  expect(value, message).not.toBeUndefined()
 }
 
 export function expectNonEmptyArray<T>(items: T[], message: string) {
