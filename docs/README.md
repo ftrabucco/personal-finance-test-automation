@@ -24,6 +24,7 @@ docs/
 │   ├── git-strategy.md
 │   ├── flaky-test-policy.md
 │   ├── pr-review-checklist.md
+│   ├── per-suite-validation-matrix.md
 │   ├── test-tagging-strategy.md
 │   ├── test-data-strategy.md
 │   └── framework-architecture.md
@@ -41,6 +42,9 @@ La documentacion de ambientes se encuentra en
 
 El checklist de review pre-PR se encuentra en
 [`strategy/pr-review-checklist.md`](strategy/pr-review-checklist.md).
+
+La matriz de validacion por tipo de cambio se encuentra en
+[`strategy/per-suite-validation-matrix.md`](strategy/per-suite-validation-matrix.md).
 
 El backlog de cobertura y madurez del framework se encuentra en
 [`strategy/automation-backlog.md`](strategy/automation-backlog.md).
