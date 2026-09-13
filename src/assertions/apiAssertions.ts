@@ -9,6 +9,12 @@ export async function expectSuccessfulResponse(response: APIResponse) {
   return body
 }
 
+export async function expectSuccessfulResponses(responses: APIResponse[]) {
+  for (const response of responses) {
+    await expectSuccessfulResponse(response)
+  }
+}
+
 export async function expectUnauthorizedResponse(response: APIResponse) {
   expect(response.status()).toBe(401)
 
@@ -19,3 +25,35 @@ export async function expectUnauthorizedResponse(response: APIResponse) {
   return body
 }
 
+export function expectDefined<T>(
+  value: T | undefined | null,
+  message: string,
+): asserts value is NonNullable<T> {
+  expect(value, message).not.toBeNull()
+  expect(value, message).not.toBeUndefined()
+}
+
+export function expectNonEmptyArray<T>(items: T[], message: string) {
+  expect(items.length, message).toBeGreaterThan(0)
+  return items
+}
+
+export function expectListContainsItem<T>(
+  items: T[],
+  predicate: (item: T) => boolean,
+  message: string,
+) {
+  const item = items.find(predicate)
+
+  expect(item, message).toBeTruthy()
+
+  return item as T
+}
+
+export function expectListDoesNotContainItem<T>(
+  items: T[],
+  predicate: (item: T) => boolean,
+  message: string,
+) {
+  expect(items.some(predicate), message).toBe(false)
+}

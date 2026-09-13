@@ -8,6 +8,7 @@ import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
 import { GastoUnicoBuilder } from '@builders/GastoUnicoBuilder'
 import { IngresoUnicoBuilder } from '@builders/IngresoUnicoBuilder'
 import { getEnvironmentConfig, requireTestUser } from '@config/environment'
+import { FinanceTestDataFactory } from '@factories/FinanceTestDataFactory'
 import { LoginPage } from '@pages/LoginPage'
 import { DashboardPage } from '@pages/DashboardPage'
 import { GastosPage } from '@pages/GastosPage'
@@ -42,6 +43,7 @@ type AppFixtures = {
   protectedResourcesApi: ProtectedResourcesApiClient
   gastoUnicoBuilder: GastoUnicoBuilder
   ingresoUnicoBuilder: IngresoUnicoBuilder
+  financeTestDataFactory: FinanceTestDataFactory
   authSession: AuthSession
   authenticatedPage: Page
   loginPage: LoginPage
@@ -108,6 +110,20 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   ingresoUnicoBuilder: async ({}, use) => {
     await use(new IngresoUnicoBuilder())
+  },
+
+  financeTestDataFactory: async ({
+    catalogosApi,
+    gastoUnicoBuilder,
+    ingresoUnicoBuilder,
+    e2eContext,
+  }, use) => {
+    await use(new FinanceTestDataFactory(
+      catalogosApi,
+      gastoUnicoBuilder,
+      ingresoUnicoBuilder,
+      e2eContext,
+    ))
   },
 
   workerAuthSession: [

@@ -30,6 +30,7 @@ src/
 ├── assertions/               # assertions reutilizables
 ├── builders/                 # datos validos por defecto
 ├── config/                   # ambientes y guardas de seguridad
+├── factories/                # composicion de datos para flujos
 ├── fixtures/                 # inyeccion de dependencias Playwright
 ├── pages/                    # Page Objects
 └── utils/                    # utilidades transversales
@@ -94,6 +95,22 @@ Proximos candidatos:
 - `CompraBuilder`
 - `GastoRecurrenteBuilder`
 
+### Factory
+
+Las factories componen builders, catalogos y metadata E2E para entregar datos
+listos para un flujo de test. No reemplazan a los builders: los usan para evitar
+que cada spec repita setup de catalogos o nombres E2E.
+
+Implementado:
+
+- `FinanceTestDataFactory`: prepara datos de gasto unico e ingreso unico para
+  flujos UI, incluyendo payload API y labels visibles para los formularios.
+
+Regla general:
+
+- Builder: crea un payload valido.
+- Factory: resuelve dependencias externas y devuelve datos listos para el flujo.
+
 ### Fixtures como composicion
 
 Las fixtures de Playwright funcionan como punto de inyeccion de dependencias.
@@ -105,6 +122,7 @@ Los tests reciben objetos listos para usar:
 - `ingresosUnicosApi`
 - `gastoUnicoBuilder`
 - `ingresoUnicoBuilder`
+- `financeTestDataFactory`
 - `authSession`
 - `loginPage`
 - `dashboardPage`
@@ -125,7 +143,12 @@ Las assertions comunes viven en `src/assertions`. La regla general:
 Ejemplo actual:
 
 - `expectSuccessfulResponse`
+- `expectSuccessfulResponses`
 - `expectUnauthorizedResponse`
+- `expectDefined`
+- `expectNonEmptyArray`
+- `expectListContainsItem`
+- `expectListDoesNotContainItem`
 
 ### Safety guard
 
@@ -154,6 +177,7 @@ Los tests destructivos no deben depender solo de convenciones humanas. La capa
 
 ## Estado
 
-Arquitectura inicial definida e implementada parcialmente. La siguiente pieza es
-agregar el primer flujo destructivo seguro contra staging/local usando
-`GastoUnicoBuilder`, `GastosUnicosApiClient` y cleanup garantizado.
+Arquitectura inicial definida e implementada parcialmente. La suite ya cuenta
+con API clients, builders, fixtures, Page Objects, assertions reutilizables y
+una primera factory de datos para flujos UI. Las proximas piezas son factories
+para flujos mas complejos y builders para compras, recurrentes y debitos.

@@ -32,10 +32,10 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add test tagging strategy documentation.
 - [x] Add flaky test policy and quarantine process.
 - [x] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
-- [ ] Add test data factory layer for UI flows.
+- [x] Add test data factory layer for UI flows.
 - [ ] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
 - [x] Add per-suite validation matrix in docs.
-- [ ] Add richer assertions helpers for UI and API responses.
+- [x] Add richer assertions helpers for UI and API responses.
 - [ ] Add CI HTML report artifact upload.
 - [ ] Add trace/video retention policy for CI.
 - [x] Add environment smoke check before running destructive tests.
