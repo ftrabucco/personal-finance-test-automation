@@ -22,7 +22,9 @@ docs/
 │   ├── e2e-observability.md
 │   ├── github-actions.md
 │   ├── git-strategy.md
+│   ├── flaky-test-policy.md
 │   ├── pr-review-checklist.md
+│   ├── test-tagging-strategy.md
 │   ├── test-data-strategy.md
 │   └── framework-architecture.md
 └── test-plans/
@@ -45,6 +47,12 @@ El backlog de cobertura y madurez del framework se encuentra en
 
 La configuracion de GitHub Actions se encuentra en
 [`strategy/github-actions.md`](strategy/github-actions.md).
+
+La estrategia de tags se encuentra en
+[`strategy/test-tagging-strategy.md`](strategy/test-tagging-strategy.md).
+
+La politica de flaky tests y quarantine se encuentra en
+[`strategy/flaky-test-policy.md`](strategy/flaky-test-policy.md).
 
 La convencion de metadata E2E se encuentra en
 [`strategy/e2e-observability.md`](strategy/e2e-observability.md).

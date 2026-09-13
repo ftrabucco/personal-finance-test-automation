@@ -29,8 +29,8 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 ## P1 - Framework Maturity
 
-- [ ] Add test tagging strategy documentation.
-- [ ] Add flaky test policy and quarantine process.
+- [x] Add test tagging strategy documentation.
+- [x] Add flaky test policy and quarantine process.
 - [x] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
 - [ ] Add test data factory layer for UI flows.
 - [ ] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
