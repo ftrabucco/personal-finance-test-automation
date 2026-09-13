@@ -54,10 +54,10 @@ flujos UI criticos, navegacion, formularios y responsive.
 | ID | Prioridad | Riesgo | UI E2E | API | Integracion | Unidad | Suite inicial | Smoke | Navegadores | Datos necesarios |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | CF-AUTH-001 | P0 | Alto | H | C | C | - | Smoke, Contract | Si | Ch | Usuario existente |
-| CF-AUTH-002 | P0 | Critico | H | C | C | - | Smoke, Contract | Parcial | Ch | Dos usuarios, token valido/invalido |
+| CF-AUTH-002 | P0 | Critico | H | C | C | - | Smoke, Contract | Si | Ch | Token ausente/invalido |
 | CF-EXP-001 | P0 | Critico | H | D,C | R | R | Smoke, Critical | Si | Ch | Catalogos, TC, gasto E2E |
 | CF-EXP-002 | P0 | Alto | H | C,D | R | R | Smoke, Critical | Si | Ch | Gastos controlados en periodo |
-| CF-DATA-001 | P0 | Critico | - | C | R | R | Contract, Nightly | No | N/A | Origenes, fallas simuladas |
+| CF-DATA-001 | P0 | Critico | - | C | R | R | Contract, Nightly | Parcial | N/A | Origenes cubiertos; fallas simuladas pendientes |
 | CF-EXP-003 | P1 | Alto | H | C,D | R | - | Critical | No | Ch | Gasto creado por API |
 | CF-EXP-004 | P1 | Alto | H | C,D | R | - | Critical | No | Ch | Gasto y origen eliminables |
 | CF-EXP-005 | P1 | Alto | H | C | - | R | Regression | No | Ch | Dataset con varias categorias/fechas |

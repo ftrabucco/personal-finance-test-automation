@@ -20,4 +20,10 @@ test.describe('Auth API contract @contract @api @auth @P0', () => {
 
     await expectUnauthorizedResponse(response)
   })
+
+  test('CF-AUTH-002 profile rejects invalid token @smoke-readonly', async ({ authApi }) => {
+    const response = await authApi.getProfile('invalid.e2e.token')
+
+    await expectUnauthorizedResponse(response)
+  })
 })
