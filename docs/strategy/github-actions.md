@@ -64,6 +64,26 @@ E2E_WORKERS=1
 
 UI destructive tests run serially to avoid data races and reduce staging load.
 
+Before API or UI destructive suites run, the npm scripts execute:
+
+```bash
+npm run test:staging:preflight
+```
+
+The preflight validates that:
+
+- `TEST_ENV=staging`;
+- `ALLOW_DESTRUCTIVE_TESTS=true`;
+- staging frontend and API URLs look correct;
+- API `/health` responds successfully;
+- the staging frontend is reachable;
+- the E2E user can login;
+- core catalogs required by destructive tests exist.
+
+If preflight fails, destructive tests should not run. This protects staging from
+partial setup issues such as wrong secrets, wrong URLs, API downtime or missing
+catalog data.
+
 ## Artifacts
 
 Both workflows upload:

@@ -38,7 +38,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [ ] Add richer assertions helpers for UI and API responses.
 - [ ] Add CI HTML report artifact upload.
 - [ ] Add trace/video retention policy for CI.
-- [ ] Add environment smoke check before running destructive tests.
+- [x] Add environment smoke check before running destructive tests.
 
 ## P1 - Product Coverage
 
