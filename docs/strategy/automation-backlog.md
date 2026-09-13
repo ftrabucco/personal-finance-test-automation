@@ -36,8 +36,8 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [ ] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
 - [x] Add per-suite validation matrix in docs.
 - [x] Add richer assertions helpers for UI and API responses.
-- [ ] Add CI HTML report artifact upload.
-- [ ] Add trace/video retention policy for CI.
+- [x] Add CI HTML report artifact upload.
+- [x] Add trace/video retention policy for CI.
 - [x] Add environment smoke check before running destructive tests.
 
 ## P1 - Product Coverage
