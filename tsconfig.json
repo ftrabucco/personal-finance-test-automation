@@ -14,6 +14,7 @@
       "@assertions/*": ["src/assertions/*"],
       "@builders/*": ["src/builders/*"],
       "@config/*": ["src/config/*"],
+      "@factories/*": ["src/factories/*"],
       "@fixtures/*": ["src/fixtures/*"],
       "@pages/*": ["src/pages/*"],
       "@utils/*": ["src/utils/*"]
@@ -22,4 +23,3 @@
   },
   "include": ["playwright.config.ts", "src/**/*.ts", "tests/**/*.ts"]
 }
-
