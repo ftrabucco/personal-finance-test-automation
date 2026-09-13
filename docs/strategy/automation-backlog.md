@@ -23,6 +23,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add API cleanup helpers by description or E2E prefix.
 - [x] Add reusable catalog selector helper for forms.
 - [x] Add API P0 flow for unique expense consolidated history.
+- [x] Add API P0 auth hardening for invalid tokens.
 - [x] Add GitHub Actions for contract and smoke tests.
 - [x] Add manual GitHub Actions workflow for staging destructive tests.
 
