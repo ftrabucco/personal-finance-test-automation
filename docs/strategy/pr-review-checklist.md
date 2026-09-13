@@ -48,6 +48,7 @@ Use this checklist before pushing commits or opening a pull request for this aut
 ## Validation
 
 Run the smallest reliable set for the change, and broaden when touching shared layers.
+Use `per-suite-validation-matrix.md` to choose commands by change type.
 
 Recommended baseline:
 

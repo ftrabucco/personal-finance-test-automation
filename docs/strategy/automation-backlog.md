@@ -34,7 +34,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
 - [ ] Add test data factory layer for UI flows.
 - [ ] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
-- [ ] Add per-suite validation matrix in docs.
+- [x] Add per-suite validation matrix in docs.
 - [ ] Add richer assertions helpers for UI and API responses.
 - [ ] Add CI HTML report artifact upload.
 - [ ] Add trace/video retention policy for CI.
