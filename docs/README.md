@@ -14,7 +14,8 @@ docs/
 │   ├── coverage-matrix.md
 │   └── known-defects.md
 ├── environment/
-│   └── staging-api-environment.md
+│   ├── staging-api-environment.md
+│   └── schema-drift-stg-prod-2026-09-14.md
 ├── strategy/
 │   ├── automation-strategy.md
 │   ├── automation-backlog.md
@@ -40,6 +41,9 @@ por pagina.
 La documentacion de ambientes se encuentra en
 [`environment/`](environment/staging-api-environment.md).
 
+El incidente de schema drift entre staging y produccion se encuentra en
+[`environment/schema-drift-stg-prod-2026-09-14.md`](environment/schema-drift-stg-prod-2026-09-14.md).
+
 El checklist de review pre-PR se encuentra en
 [`strategy/pr-review-checklist.md`](strategy/pr-review-checklist.md).
 
@@ -57,6 +61,9 @@ La estrategia de tags se encuentra en
 
 La politica de flaky tests y quarantine se encuentra en
 [`strategy/flaky-test-policy.md`](strategy/flaky-test-policy.md).
+
+La politica de reportes y artifacts de Playwright se encuentra en
+[`strategy/playwright-reporting.md`](strategy/playwright-reporting.md).
 
 La convencion de metadata E2E se encuentra en
 [`strategy/e2e-observability.md`](strategy/e2e-observability.md).

@@ -71,6 +71,24 @@ by the application.
   `finanzas.debitos_automaticos.usa_vencimiento_tarjeta`.
 - Tracking: Not created yet.
 
+## BUG-2026-004 - Deleted gasto unico remains visible in UI after successful DELETE
+
+- Status: Open
+- Severity: High
+- Area: Frontend UI / Data refresh
+- Found by: `tests/ui/gastos-unicos.destructive.spec.ts`
+- Related flow: `CF-EXP-001`
+- Evidence: The UI flow creates a gasto unico, clicks delete, receives a
+  successful `DELETE /gastos-unicos/:id` response, but the item remains visible
+  in the gastos únicos list after waiting for the UI to update.
+- Expected: After a successful delete, the deleted gasto should disappear from
+  the visible list without requiring manual refresh.
+- Actual: The deleted gasto card/row remains visible.
+- Proposed test: Keep `CF-EXP-001` UI destructive coverage as an expected
+  failure until the frontend refreshes/removes the item correctly; then remove
+  `test.fail(...)`.
+- Tracking: Not created yet.
+
 ## Template
 
 ```md

@@ -18,6 +18,7 @@ test.describe('Gastos unicos UI destructive @destructive @ui @gastos @P0', () =>
   }, testInfo) => {
     test.skip(testInfo.project.name !== 'chromium', 'Destructive UI flow runs once to avoid duplicated data')
     requireDestructiveTestsAllowed()
+    test.fail(true, 'BUG-2026-004: UI keeps a deleted gasto unico visible after DELETE succeeds.')
 
     const { payload: gasto, uiOptions } = await financeTestDataFactory.gastoUnicoForUi(authSession.token)
 

@@ -40,13 +40,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - [ ] Add update/process methods when coverage reaches edit and monthly generation flows.
 - [x] Add per-suite validation matrix in docs.
 - [x] Add richer assertions helpers for UI and API responses.
-- [ ] Add CI HTML report artifact upload.
-- [ ] Add trace/video retention policy for CI.
+- [x] Add CI HTML report artifact upload.
+- [x] Add trace/video retention policy for CI.
 - [x] Add environment smoke check before running destructive tests.
+- [ ] Add read-only schema drift check for critical STG/PROD table columns.
 
 ## P1 - Product Coverage
 
-- [ ] Dashboard: validate totals after API-created expense/income.
+- [x] Dashboard: validate totals after API-created expense/income.
 - [ ] Gastos: filters by category, currency, and date.
 - [ ] Gastos: edit unique expense.
 - [ ] Gastos: API/UI representative flow for recurring expenses (`CF-SCH-001`).
