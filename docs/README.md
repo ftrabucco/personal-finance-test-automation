@@ -15,6 +15,7 @@ docs/
 │   └── known-defects.md
 ├── environment/
 │   ├── staging-api-environment.md
+│   ├── schema-drift-check.md
 │   └── schema-drift-stg-prod-2026-09-14.md
 ├── strategy/
 │   ├── automation-strategy.md
@@ -44,6 +45,9 @@ La documentacion de ambientes se encuentra en
 
 El incidente de schema drift entre staging y produccion se encuentra en
 [`environment/schema-drift-stg-prod-2026-09-14.md`](environment/schema-drift-stg-prod-2026-09-14.md).
+
+El check read-only de schema drift se encuentra en
+[`environment/schema-drift-check.md`](environment/schema-drift-check.md).
 
 El checklist de review pre-PR se encuentra en
 [`strategy/pr-review-checklist.md`](strategy/pr-review-checklist.md).
