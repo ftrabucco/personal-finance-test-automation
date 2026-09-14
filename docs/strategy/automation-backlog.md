@@ -49,12 +49,12 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 - [x] Dashboard: validate totals after API-created expense/income.
 - [ ] Gastos: filters by category, currency, and date.
-- [ ] Gastos: edit unique expense.
+- [x] Gastos: edit unique expense.
 - [ ] Gastos: API/UI representative flow for recurring expenses (`CF-SCH-001`).
 - [ ] Gastos: API/UI representative flow for automatic debits (`CF-SCH-002`).
 - [ ] Gastos: API/UI representative flow for purchases in installments (`CF-SCH-003`).
 - [ ] Ingresos: filters by source, currency, and date.
-- [ ] Ingresos: edit unique income.
+- [x] Ingresos: edit unique income.
 - [ ] Configuracion: read-only module state smoke.
 - [ ] Perfil: read-only account data smoke.
 

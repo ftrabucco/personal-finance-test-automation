@@ -1,12 +1,12 @@
 import { test, expect } from '@fixtures/test'
-import { expectSuccessfulResponse } from '@assertions/apiAssertions'
+import { expectDefined, expectSuccessfulResponse } from '@assertions/apiAssertions'
 import { isDestructiveTestsAllowed, requireDestructiveTestsAllowed } from '@config/safety'
 import type { CatalogosResponse } from '@api/catalogos.api'
 
-test.describe('Ingresos unicos API destructive @destructive @api @ingresos @P0', () => {
+test.describe('Ingresos unicos API destructive @destructive @api @ingresos', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')
 
-  test('CF-INC-001 creates, verifies and cleans up an ingreso unico', async ({
+  test('CF-INC-001 creates, verifies and cleans up an ingreso unico @P0', async ({
     authSession,
     catalogosApi,
     e2eContext,
@@ -41,6 +41,58 @@ test.describe('Ingresos unicos API destructive @destructive @api @ingresos @P0',
 
       expect(createdIngreso.descripcion).toBe(ingreso.descripcion)
       expect(Number(createdIngreso.monto)).toBe(ingreso.monto)
+    } finally {
+      if (ingresoId) {
+        const deleteResponse = await ingresosUnicosApi.delete(authSession.token, ingresoId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+    }
+  })
+
+  test('CF-INC-001 updates an ingreso unico @P1', async ({
+    authSession,
+    catalogosApi,
+    e2eContext,
+    ingresosUnicosApi,
+    ingresoUnicoBuilder,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    let ingresoId: number | undefined
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+      const fuenteIngreso = catalogosBody.data?.fuentesIngreso?.[0]
+
+      expectDefined(fuenteIngreso?.id, 'Expected at least one income source')
+
+      const ingreso = ingresoUnicoBuilder
+        .withDescripcion(e2eContext.entityName('Ingreso-Unico-API-Update'))
+        .withFuenteIngresoId(fuenteIngreso.id)
+        .build()
+
+      const createResponse = await ingresosUnicosApi.create(authSession.token, ingreso)
+      const createBody = await expectSuccessfulResponse(createResponse)
+      ingresoId = createBody.data?.id ?? createBody.data?.ingreso?.id
+
+      expectDefined(ingresoId, 'Expected created ingreso unico id')
+
+      const updatedIngreso = {
+        ...ingreso,
+        descripcion: e2eContext.entityName('Ingreso-Unico-API-Updated'),
+        monto: ingreso.monto + 250,
+      }
+
+      const updateResponse = await ingresosUnicosApi.update(authSession.token, ingresoId, updatedIngreso)
+      await expectSuccessfulResponse(updateResponse)
+
+      const getResponse = await ingresosUnicosApi.getById(authSession.token, ingresoId)
+      const getBody = await expectSuccessfulResponse(getResponse)
+      const fetchedIngreso = getBody.data?.ingreso ?? getBody.data
+
+      expect(fetchedIngreso.descripcion).toBe(updatedIngreso.descripcion)
+      expect(Number(fetchedIngreso.monto ?? fetchedIngreso.monto_ars)).toBe(updatedIngreso.monto)
     } finally {
       if (ingresoId) {
         const deleteResponse = await ingresosUnicosApi.delete(authSession.token, ingresoId)

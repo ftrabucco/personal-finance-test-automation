@@ -61,6 +61,13 @@ export class GastosUnicosApiClient extends BaseApiClient {
     })
   }
 
+  async update(token: string, id: number, data: GastoUnicoRequest, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl(`/gastos-unicos/${id}`), {
+      headers: this.authHeaders(token, metadata),
+      data,
+    })
+  }
+
   async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/gastos-unicos/${id}`), {
       headers: this.authHeaders(token, metadata),

@@ -57,6 +57,13 @@ export class IngresosUnicosApiClient extends BaseApiClient {
     })
   }
 
+  async update(token: string, id: number, data: IngresoUnicoRequest, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl(`/ingresos-unicos/${id}`), {
+      headers: this.authHeaders(token, metadata),
+      data,
+    })
+  }
+
   async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/ingresos-unicos/${id}`), {
       headers: this.authHeaders(token, metadata),
