@@ -49,11 +49,15 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 - [x] Dashboard: validate totals after API-created expense/income.
 - [ ] Gastos: filters by category, currency, and date.
+  - [x] API coverage for category and date filters.
+  - [ ] Currency filter pending backend fix for `BUG-2026-005`.
 - [x] Gastos: edit unique expense.
 - [ ] Gastos: API/UI representative flow for recurring expenses (`CF-SCH-001`).
 - [ ] Gastos: API/UI representative flow for automatic debits (`CF-SCH-002`).
 - [ ] Gastos: API/UI representative flow for purchases in installments (`CF-SCH-003`).
 - [ ] Ingresos: filters by source, currency, and date.
+  - [x] API coverage for source and date filters.
+  - [ ] Currency filter pending backend support.
 - [x] Ingresos: edit unique income.
 - [ ] Configuracion: read-only module state smoke.
 - [ ] Perfil: read-only account data smoke.
