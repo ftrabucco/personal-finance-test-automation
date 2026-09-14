@@ -16,6 +16,8 @@
     "test:ui": "playwright test --grep @ui",
     "test:ui:serial": "E2E_WORKERS=1 playwright test --grep @ui",
     "test:ui:parallel": "E2E_WORKERS=4 playwright test --grep @ui",
+    "test:ui:review": "E2E_TRACE=on E2E_SCREENSHOT=on E2E_VIDEO=on E2E_WORKERS=1 playwright test --grep @ui --project=chromium",
+    "test:staging:destructive:ui:review": "E2E_TRACE=on E2E_SCREENSHOT=on E2E_VIDEO=on npm run test:staging:destructive:ui",
     "test:agent-seed": "TEST_ENV=staging playwright test tests/seed.spec.ts --project=agent-seed",
     "test:headed": "playwright test --headed",
     "test:debug": "playwright test --debug",
