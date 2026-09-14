@@ -73,7 +73,7 @@ by the application.
 
 ## BUG-2026-004 - Deleted gasto unico remains visible in UI after successful DELETE
 
-- Status: Open
+- Status: Fixed
 - Severity: High
 - Area: Frontend UI / Data refresh
 - Found by: `tests/ui/gastos-unicos.destructive.spec.ts`
@@ -84,9 +84,9 @@ by the application.
 - Expected: After a successful delete, the deleted gasto should disappear from
   the visible list without requiring manual refresh.
 - Actual: The deleted gasto card/row remains visible.
-- Proposed test: Keep `CF-EXP-001` UI destructive coverage as an expected
-  failure until the frontend refreshes/removes the item correctly; then remove
-  `test.fail(...)`.
+- Proposed test: Covered by `CF-EXP-001` UI destructive coverage.
+- Fixed notes: Frontend now removes the deleted gasto from React Query cache
+  and refetches related gasto queries after successful delete.
 - Tracking: Not created yet.
 
 ## Template
