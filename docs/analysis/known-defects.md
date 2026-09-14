@@ -33,6 +33,42 @@ by the application.
   inactive after the backend is fixed.
 - Tracking: Not created yet.
 
+## BUG-2026-002 - Creating a compra fails because staging DB schema is missing a model column
+
+- Status: Open
+- Severity: High
+- Area: Backend API / Staging DB
+- Found by: `tests/api/compras.destructive.spec.ts`
+- Related flow: `CF-SCH-003`
+- Evidence: `POST /compras` returns `success:false` with details
+  `column "fecha_ultima_cuota_generada" does not exist`.
+- Expected: A valid compra en cuotas payload should create a compra definition
+  and return `201`/`success:true`.
+- Actual: The API reaches persistence and fails because the current `Compra`
+  model expects `fecha_ultima_cuota_generada`, but the staging database table
+  does not contain that column.
+- Proposed test: Keep `CF-SCH-003` API destructive coverage as an expected
+  failure until staging schema is aligned; then remove `test.fail(...)`.
+- Tracking: Not created yet.
+
+## BUG-2026-003 - Creating a debito automatico fails because staging DB schema is missing a model column
+
+- Status: Open
+- Severity: High
+- Area: Backend API / Staging DB
+- Found by: `tests/api/debitos-automaticos.destructive.spec.ts`
+- Related flow: `CF-SCH-002`
+- Evidence: `POST /debitos-automaticos` returns `success:false` with details
+  `column "usa_vencimiento_tarjeta" of relation "debitos_automaticos" does not exist`.
+- Expected: A valid debito automatico payload should create a scheduled debit
+  definition and return `201`/`success:true`.
+- Actual: The API reaches persistence and fails because the current
+  `DebitoAutomatico` model/controller expects `usa_vencimiento_tarjeta`, but
+  the staging database table does not contain that column.
+- Proposed test: Keep `CF-SCH-002` API destructive coverage as an expected
+  failure until staging schema is aligned; then remove `test.fail(...)`.
+- Tracking: Not created yet.
+
 ## Template
 
 ```md

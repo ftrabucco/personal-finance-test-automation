@@ -81,9 +81,9 @@ requieren diseño propio porque dependen de fechas, vencimientos, frecuencia,
 idempotencia de procesamiento, tarjetas/cuentas y cleanup mas cuidadoso. No
 deben agregarse como variantes dentro de `GastoUnicoBuilder`.
 
-Cuando estos builders se implementen, pueden compartir una capa comun liviana
-para datos transversales de gasto, pero cada builder debe exponer solo los
-campos validos para su endpoint.
+Los builders iniciales para estos flujos ya existen en la capa API. Pueden
+compartir una capa comun liviana para datos transversales de gasto mas adelante,
+pero cada builder debe exponer solo los campos validos para su endpoint.
 
 ## Cleanup
 
@@ -113,6 +113,8 @@ exige `ALLOW_DESTRUCTIVE_TESTS=true` para staging/local.
 
 ## Estado
 
-Definicion inicial lista. Falta incorporar builders/factories para compras en
-cuotas, gastos recurrentes y debitos automaticos, ademas de un reset/seed
-reproducible del ambiente staging.
+Definicion inicial lista. Ya existen builders/API clients para gasto unico,
+ingreso unico, compra en cuotas, gasto recurrente y debito automatico. Falta
+incorporar factories para flujos UI/programados, metodos de update/procesamiento
+cuando se cubran esos escenarios, y un reset/seed reproducible del ambiente
+staging.

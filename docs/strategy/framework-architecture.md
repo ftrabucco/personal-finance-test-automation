@@ -88,14 +88,15 @@ cuando el contrato evoluciona.
 
 Implementado:
 
+- `CompraBuilder`
+- `DebitoAutomaticoBuilder`
 - `GastoRecurrenteBuilder`
 - `GastoUnicoBuilder`
 - `IngresoUnicoBuilder`
 
 Proximos candidatos:
 
-- `CompraBuilder`
-- `DebitoAutomaticoBuilder`
+- builders/factories para flujos de edicion y procesamiento programado.
 
 ### Factory
 
