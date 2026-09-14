@@ -22,19 +22,29 @@ export interface IngresoUnicoResponseItem {
 
 export interface IngresoUnicoListResponse {
   success: boolean
-  data?: IngresoUnicoResponseItem[] | { ingresos?: IngresoUnicoResponseItem[] }
+  data?:
+    | IngresoUnicoResponseItem[]
+    | {
+        ingresos?: IngresoUnicoResponseItem[]
+        items?: IngresoUnicoResponseItem[]
+        results?: IngresoUnicoResponseItem[]
+        data?: IngresoUnicoResponseItem[]
+      }
   error?: string
   message?: string
 }
+
+type IngresosUnicosListParams = Record<string, string | number | boolean>
 
 export class IngresosUnicosApiClient extends BaseApiClient {
   constructor(request: APIRequestContext, defaultMetadata?: E2EMetadata) {
     super(request, defaultMetadata)
   }
 
-  async list(token: string, metadata?: E2EMetadata) {
+  async list(token: string, params: IngresosUnicosListParams = {}, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/ingresos-unicos'), {
       headers: this.authHeaders(token, metadata),
+      params,
     })
   }
 
@@ -71,7 +81,7 @@ export class IngresosUnicosApiClient extends BaseApiClient {
   }
 
   async findIdsByDescription(token: string, descripcion: string, metadata?: E2EMetadata) {
-    const response = await this.list(token, metadata)
+    const response = await this.list(token, {}, metadata)
     const body = (await response.json()) as IngresoUnicoListResponse
 
     return extractIngresos(body)
@@ -80,7 +90,7 @@ export class IngresosUnicosApiClient extends BaseApiClient {
   }
 
   async findIdsByDescriptionPrefix(token: string, prefix: string, metadata?: E2EMetadata) {
-    const response = await this.list(token, metadata)
+    const response = await this.list(token, {}, metadata)
     const body = (await response.json()) as IngresoUnicoListResponse
 
     return extractIngresos(body)
@@ -100,5 +110,5 @@ export function extractIngresos(body: IngresoUnicoListResponse): IngresoUnicoRes
     return data
   }
 
-  return data?.ingresos ?? []
+  return data?.ingresos ?? data?.items ?? data?.results ?? data?.data ?? []
 }

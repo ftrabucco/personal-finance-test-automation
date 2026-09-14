@@ -89,6 +89,23 @@ by the application.
   and refetches related gasto queries after successful delete.
 - Tracking: Not created yet.
 
+## BUG-2026-005 - Gastos únicos API ignores currency filter
+
+- Status: Open
+- Severity: Medium
+- Area: Backend API
+- Found by: `tests/api/unique-transaction-filters.destructive.spec.ts`
+- Related flow: `CF-EXP-005`
+- Evidence: `GET /gastos-unicos?moneda_origen=USD` does not apply a currency
+  predicate in the backend controller, so ARS expenses from the same date range
+  can still be returned.
+- Expected: Filtering by `moneda_origen=USD` should exclude ARS expenses, and
+  filtering by `moneda_origen=ARS` should exclude USD expenses.
+- Actual: The query parameter is currently ignored by the gastos únicos API.
+- Proposed test: Covered as an expected-failing API destructive test until the
+  backend implements the filter.
+- Tracking: Not created yet.
+
 ## Template
 
 ```md

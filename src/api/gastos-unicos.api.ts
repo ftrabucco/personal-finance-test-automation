@@ -26,19 +26,29 @@ export interface GastoUnicoResponseItem {
 
 export interface GastoUnicoListResponse {
   success: boolean
-  data?: GastoUnicoResponseItem[] | { gastos?: GastoUnicoResponseItem[] }
+  data?:
+    | GastoUnicoResponseItem[]
+    | {
+        gastos?: GastoUnicoResponseItem[]
+        items?: GastoUnicoResponseItem[]
+        results?: GastoUnicoResponseItem[]
+        data?: GastoUnicoResponseItem[]
+      }
   error?: string
   message?: string
 }
+
+type GastosUnicosListParams = Record<string, string | number | boolean>
 
 export class GastosUnicosApiClient extends BaseApiClient {
   constructor(request: APIRequestContext, defaultMetadata?: E2EMetadata) {
     super(request, defaultMetadata)
   }
 
-  async list(token: string, metadata?: E2EMetadata) {
+  async list(token: string, params: GastosUnicosListParams = {}, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/gastos-unicos'), {
       headers: this.authHeaders(token, metadata),
+      params,
     })
   }
 
@@ -75,7 +85,7 @@ export class GastosUnicosApiClient extends BaseApiClient {
   }
 
   async findIdsByDescription(token: string, descripcion: string, metadata?: E2EMetadata) {
-    const response = await this.list(token, metadata)
+    const response = await this.list(token, {}, metadata)
     const body = (await response.json()) as GastoUnicoListResponse
 
     return extractGastos(body)
@@ -84,7 +94,7 @@ export class GastosUnicosApiClient extends BaseApiClient {
   }
 
   async findIdsByDescriptionPrefix(token: string, prefix: string, metadata?: E2EMetadata) {
-    const response = await this.list(token, metadata)
+    const response = await this.list(token, {}, metadata)
     const body = (await response.json()) as GastoUnicoListResponse
 
     return extractGastos(body)
@@ -104,5 +114,5 @@ export function extractGastos(body: GastoUnicoListResponse): GastoUnicoResponseI
     return data
   }
 
-  return data?.gastos ?? []
+  return data?.gastos ?? data?.items ?? data?.results ?? data?.data ?? []
 }
