@@ -3,9 +3,20 @@ import { getEnvironmentConfig } from './src/config/environment'
 
 const env = getEnvironmentConfig()
 const workers = process.env.E2E_WORKERS ? Number(process.env.E2E_WORKERS) : 4
-const trace = (process.env.E2E_TRACE ?? 'retain-on-failure') as 'off' | 'on' | 'retain-on-failure' | 'on-first-retry'
-const screenshot = (process.env.E2E_SCREENSHOT ?? 'only-on-failure') as 'off' | 'on' | 'only-on-failure'
-const video = (process.env.E2E_VIDEO ?? 'retain-on-failure') as 'off' | 'on' | 'retain-on-failure' | 'on-first-retry'
+const trace = (process.env.E2E_TRACE ?? 'retain-on-failure') as
+  | 'off'
+  | 'on'
+  | 'retain-on-failure'
+  | 'on-first-retry'
+const screenshot = (process.env.E2E_SCREENSHOT ?? 'only-on-failure') as
+  | 'off'
+  | 'on'
+  | 'only-on-failure'
+const video = (process.env.E2E_VIDEO ?? 'retain-on-failure') as
+  | 'off'
+  | 'on'
+  | 'retain-on-failure'
+  | 'on-first-retry'
 
 export default defineConfig({
   testDir: './tests',

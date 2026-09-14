@@ -33,19 +33,21 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add flaky test policy and quarantine process.
 - [x] Add E2E metadata model: test run id, correlation id, flow id, entity prefix, timestamps.
 - [x] Add test data factory layer for UI flows.
-- [ ] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
+- [x] Add dedicated builders for scheduled expense flows: purchases, recurring expenses, and automatic debits.
   - [x] Add `GastoRecurrenteBuilder` and API client.
-  - [ ] Add `CompraBuilder` and API client.
-  - [ ] Add `DebitoAutomaticoBuilder` and API client.
+  - [x] Add `CompraBuilder` and API client.
+  - [x] Add `DebitoAutomaticoBuilder` and API client.
+  - [ ] Add update/process methods when coverage reaches edit and monthly generation flows.
 - [x] Add per-suite validation matrix in docs.
 - [x] Add richer assertions helpers for UI and API responses.
 - [x] Add CI HTML report artifact upload.
 - [x] Add trace/video retention policy for CI.
 - [x] Add environment smoke check before running destructive tests.
+- [ ] Add read-only schema drift check for critical STG/PROD table columns.
 
 ## P1 - Product Coverage
 
-- [ ] Dashboard: validate totals after API-created expense/income.
+- [x] Dashboard: validate totals after API-created expense/income.
 - [ ] Gastos: filters by category, currency, and date.
 - [ ] Gastos: edit unique expense.
 - [ ] Gastos: API/UI representative flow for recurring expenses (`CF-SCH-001`).

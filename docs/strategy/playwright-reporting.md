@@ -27,6 +27,21 @@ Playwright ya nos da:
 - attachments por test;
 - metadata E2E adjunta por fixture.
 
+## Defaults
+
+El framework conserva artifacts principalmente cuando hay fallas, para que las
+ejecuciones normales sean livianas pero las fallas queden diagnosticables.
+
+Default actual:
+
+```text
+E2E_TRACE=retain-on-failure
+E2E_SCREENSHOT=only-on-failure
+E2E_VIDEO=retain-on-failure
+```
+
+Estos defaults viven en `playwright.config.ts`.
+
 ## Comandos locales
 
 ### Abrir ultimo reporte
@@ -101,6 +116,11 @@ GitHub Actions sube:
 
 - `playwright-report/`
 - `test-results/`
+
+Esto aplica a:
+
+- PR checks.
+- Ejecuciones manuales destructivas de staging.
 
 Retention actual:
 

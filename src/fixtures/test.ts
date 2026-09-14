@@ -1,11 +1,15 @@
 import { request as playwrightRequest, test as base, type Page } from '@playwright/test'
 import { AuthApiClient } from '@api/auth.api'
 import { CatalogosApiClient } from '@api/catalogos.api'
+import { ComprasApiClient } from '@api/compras.api'
+import { DebitosAutomaticosApiClient } from '@api/debitos-automaticos.api'
 import { GastosApiClient } from '@api/gastos.api'
 import { GastosRecurrentesApiClient } from '@api/gastos-recurrentes.api'
 import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
 import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
+import { CompraBuilder } from '@builders/CompraBuilder'
+import { DebitoAutomaticoBuilder } from '@builders/DebitoAutomaticoBuilder'
 import { GastoRecurrenteBuilder } from '@builders/GastoRecurrenteBuilder'
 import { GastoUnicoBuilder } from '@builders/GastoUnicoBuilder'
 import { IngresoUnicoBuilder } from '@builders/IngresoUnicoBuilder'
@@ -39,11 +43,15 @@ type AppFixtures = {
   e2eContext: E2ETestContext
   authApi: AuthApiClient
   catalogosApi: CatalogosApiClient
+  comprasApi: ComprasApiClient
+  debitosAutomaticosApi: DebitosAutomaticosApiClient
   gastosApi: GastosApiClient
   gastosRecurrentesApi: GastosRecurrentesApiClient
   gastosUnicosApi: GastosUnicosApiClient
   ingresosUnicosApi: IngresosUnicosApiClient
   protectedResourcesApi: ProtectedResourcesApiClient
+  compraBuilder: CompraBuilder
+  debitoAutomaticoBuilder: DebitoAutomaticoBuilder
   gastoRecurrenteBuilder: GastoRecurrenteBuilder
   gastoUnicoBuilder: GastoUnicoBuilder
   ingresoUnicoBuilder: IngresoUnicoBuilder
@@ -92,6 +100,14 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
     await use(new CatalogosApiClient(request, e2eContext))
   },
 
+  comprasApi: async ({ request, e2eContext }, use) => {
+    await use(new ComprasApiClient(request, e2eContext))
+  },
+
+  debitosAutomaticosApi: async ({ request, e2eContext }, use) => {
+    await use(new DebitosAutomaticosApiClient(request, e2eContext))
+  },
+
   gastosApi: async ({ request, e2eContext }, use) => {
     await use(new GastosApiClient(request, e2eContext))
   },
@@ -110,6 +126,14 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   protectedResourcesApi: async ({ request, e2eContext }, use) => {
     await use(new ProtectedResourcesApiClient(request, e2eContext))
+  },
+
+  compraBuilder: async ({}, use) => {
+    await use(new CompraBuilder())
+  },
+
+  debitoAutomaticoBuilder: async ({}, use) => {
+    await use(new DebitoAutomaticoBuilder())
   },
 
   gastoRecurrenteBuilder: async ({}, use) => {
