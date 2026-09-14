@@ -35,7 +35,7 @@ by the application.
 
 ## BUG-2026-002 - Creating a compra fails because staging DB schema is missing a model column
 
-- Status: Open
+- Status: Fixed
 - Severity: High
 - Area: Backend API / Staging DB
 - Found by: `tests/api/compras.destructive.spec.ts`
@@ -47,13 +47,14 @@ by the application.
 - Actual: The API reaches persistence and fails because the current `Compra`
   model expects `fecha_ultima_cuota_generada`, but the staging database table
   does not contain that column.
-- Proposed test: Keep `CF-SCH-003` API destructive coverage as an expected
-  failure until staging schema is aligned; then remove `test.fail(...)`.
+- Proposed test: Covered by `CF-SCH-003` API destructive coverage.
+- Fixed notes: Staging DB schema was aligned by adding
+  `finanzas.compras.fecha_ultima_cuota_generada`.
 - Tracking: Not created yet.
 
 ## BUG-2026-003 - Creating a debito automatico fails because staging DB schema is missing a model column
 
-- Status: Open
+- Status: Fixed
 - Severity: High
 - Area: Backend API / Staging DB
 - Found by: `tests/api/debitos-automaticos.destructive.spec.ts`
@@ -65,8 +66,9 @@ by the application.
 - Actual: The API reaches persistence and fails because the current
   `DebitoAutomatico` model/controller expects `usa_vencimiento_tarjeta`, but
   the staging database table does not contain that column.
-- Proposed test: Keep `CF-SCH-002` API destructive coverage as an expected
-  failure until staging schema is aligned; then remove `test.fail(...)`.
+- Proposed test: Covered by `CF-SCH-002` API destructive coverage.
+- Fixed notes: Staging DB schema was aligned by adding
+  `finanzas.debitos_automaticos.usa_vencimiento_tarjeta`.
 - Tracking: Not created yet.
 
 ## Template

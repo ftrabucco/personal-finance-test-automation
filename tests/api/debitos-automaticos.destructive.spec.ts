@@ -14,7 +14,6 @@ test.describe('Debitos automaticos API destructive @destructive @api @gastos @de
     e2eContext,
   }) => {
     requireDestructiveTestsAllowed()
-    test.fail(true, 'BUG-2026-003: staging DB is missing debito automatico schema columns required by the API model.')
 
     let debitoAutomaticoId: number | undefined
 

@@ -14,7 +14,6 @@ test.describe('Compras API destructive @destructive @api @gastos @compras @P1', 
     e2eContext,
   }) => {
     requireDestructiveTestsAllowed()
-    test.fail(true, 'BUG-2026-002: staging DB is missing compra schema columns required by the API model.')
 
     let compraId: number | undefined
 
