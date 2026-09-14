@@ -23,6 +23,7 @@
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
     "test:prod:smoke": "TEST_ENV=prod playwright test --grep @smoke-readonly --project=api --project=chromium",
+    "schema:drift:check": "node scripts/schema-drift-check.mjs",
     "install:browsers": "playwright install"
   },
   "keywords": [

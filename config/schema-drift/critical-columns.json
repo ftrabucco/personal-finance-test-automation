@@ -1,0 +1,11 @@
+{
+  "schema": "finanzas",
+  "tables": {
+    "compras": {
+      "fecha_ultima_cuota_generada": "date"
+    },
+    "debitos_automaticos": {
+      "usa_vencimiento_tarjeta": "boolean"
+    }
+  }
+}

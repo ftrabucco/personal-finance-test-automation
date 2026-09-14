@@ -43,7 +43,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Add CI HTML report artifact upload.
 - [x] Add trace/video retention policy for CI.
 - [x] Add environment smoke check before running destructive tests.
-- [ ] Add read-only schema drift check for critical STG/PROD table columns.
+- [x] Add read-only schema drift check for critical STG/PROD table columns.
 
 ## P1 - Product Coverage
 
