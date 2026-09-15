@@ -106,6 +106,27 @@ by the application.
   backend implements the filter.
 - Tracking: Not created yet.
 
+## BUG-2026-006 - Perfil form fields are not prefilled when restoring an existing session
+
+- Status: Open
+- Severity: Medium
+- Area: Frontend UI / Profile
+- Found by: `tests/ui/config-profile.smoke.spec.ts`
+- Related flow: `CF-PROFILE-READ-002`
+- Evidence: `/perfil` renders the `Nombre` and `Email` inputs empty when the
+  test starts from an already-authenticated browser context with token and user
+  data restored from storage.
+- Expected: The profile form should display the current authenticated user's
+  name and email both after an interactive login and when an existing session is
+  restored from `localStorage`/cookie.
+- Actual: The profile page initializes local form state from `user` during the
+  first render. In restored-session flows, the auth context loads `user` after
+  that render, so the local form state can remain empty.
+- Proposed test: Covered as an expected-failing read-only UI smoke test until
+  the frontend syncs profile form state when the authenticated user becomes
+  available.
+- Tracking: Not created yet.
+
 ## Template
 
 ```md
