@@ -16,4 +16,18 @@ export class PerfilPage extends BasePage {
     await expect(this.page.getByText('Información Personal', { exact: true })).toBeVisible()
     await expect(this.page.locator('div').filter({ hasText: /^Cambiar Contraseña$/ }).first()).toBeVisible()
   }
+
+  async expectAccountData(expected: { id: number; nombre: string; email: string }) {
+    await expect(this.page.getByLabel('Nombre')).toHaveValue(expected.nombre)
+    await expect(this.page.getByLabel('Email')).toHaveValue(expected.email)
+    await expect(this.page.getByRole('button', { name: 'Guardar Cambios' })).toBeVisible()
+    await expect(this.page.getByText(`ID de usuario: ${expected.id}`)).toBeVisible()
+  }
+
+  async expectPasswordSectionReadOnlyInitialState() {
+    await expect(this.page.getByLabel('Contraseña Actual')).toHaveValue('')
+    await expect(this.page.getByLabel('Nueva Contraseña', { exact: true })).toHaveValue('')
+    await expect(this.page.getByLabel('Confirmar Nueva Contraseña')).toHaveValue('')
+    await expect(this.page.getByRole('button', { name: 'Cambiar Contraseña' })).toBeDisabled()
+  }
 }

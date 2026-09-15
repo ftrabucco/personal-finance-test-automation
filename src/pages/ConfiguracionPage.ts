@@ -18,4 +18,17 @@ export class ConfiguracionPage extends BasePage {
     await expect(this.page.getByRole('tab', { name: 'Categorias' })).toBeVisible()
     await expect(this.page.getByRole('tab', { name: 'Fuentes' })).toBeVisible()
   }
+
+  async openModulosTab() {
+    await this.page.getByRole('tab', { name: 'Modulos' }).click()
+    await expect(this.page.getByText('Modulos de la Aplicacion')).toBeVisible()
+  }
+
+  async expectModuleStateVisible() {
+    await expect(this.page.getByText('Modulos Principales (siempre activos)')).toBeVisible()
+    await expect(this.page.getByText('Modulos Opcionales')).toBeVisible()
+    await expect(this.page.getByText('Core').first()).toBeVisible()
+    await expect(this.page.getByRole('switch').first()).toBeVisible()
+    await expect(this.page.getByText('Tip:')).toBeVisible()
+  }
 }
