@@ -7,6 +7,7 @@ import { GastosApiClient } from '@api/gastos.api'
 import { GastosRecurrentesApiClient } from '@api/gastos-recurrentes.api'
 import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
+import { PreferenciasApiClient } from '@api/preferencias.api'
 import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
 import { CompraBuilder } from '@builders/CompraBuilder'
 import { DebitoAutomaticoBuilder } from '@builders/DebitoAutomaticoBuilder'
@@ -49,6 +50,7 @@ type AppFixtures = {
   gastosRecurrentesApi: GastosRecurrentesApiClient
   gastosUnicosApi: GastosUnicosApiClient
   ingresosUnicosApi: IngresosUnicosApiClient
+  preferenciasApi: PreferenciasApiClient
   protectedResourcesApi: ProtectedResourcesApiClient
   compraBuilder: CompraBuilder
   debitoAutomaticoBuilder: DebitoAutomaticoBuilder
@@ -122,6 +124,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   ingresosUnicosApi: async ({ request, e2eContext }, use) => {
     await use(new IngresosUnicosApiClient(request, e2eContext))
+  },
+
+  preferenciasApi: async ({ request, e2eContext }, use) => {
+    await use(new PreferenciasApiClient(request, e2eContext))
   },
 
   protectedResourcesApi: async ({ request, e2eContext }, use) => {

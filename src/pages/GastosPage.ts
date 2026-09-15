@@ -21,6 +21,18 @@ export class GastosPage extends BasePage {
     await super.goto('/gastos?tab=unicos')
   }
 
+  async gotoCompras() {
+    await super.goto('/gastos?tab=cuotas')
+  }
+
+  async gotoRecurrentes() {
+    await super.goto('/gastos?tab=recurrentes')
+  }
+
+  async gotoDebitos() {
+    await super.goto('/gastos?tab=debitos')
+  }
+
   async expectLoaded() {
     const main = this.page.getByRole('main')
 
@@ -87,6 +99,18 @@ export class GastosPage extends BasePage {
     await expect(this.gastoItem(descripcion)).toBeVisible()
   }
 
+  async expectCompraVisible(descripcion: string) {
+    await expect(this.scheduledExpenseItem(descripcion)).toBeVisible()
+  }
+
+  async expectGastoRecurrenteVisible(descripcion: string) {
+    await expect(this.scheduledExpenseItem(descripcion)).toBeVisible()
+  }
+
+  async expectDebitoAutomaticoVisible(descripcion: string) {
+    await expect(this.scheduledExpenseItem(descripcion)).toBeVisible()
+  }
+
   async openFilters() {
     await this.page.getByRole('button', { name: /Filtros/ }).click()
   }
@@ -127,6 +151,10 @@ export class GastosPage extends BasePage {
   }
 
   private gastoItem(descripcion: string) {
+    return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
+  }
+
+  private scheduledExpenseItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
   }
 
