@@ -79,6 +79,20 @@ export class IngresosPage extends BasePage {
     await expect(this.ingresoItem(descripcion)).toBeVisible()
   }
 
+  async openFilters() {
+    await this.page.getByRole('button', { name: /Filtros/ }).click()
+  }
+
+  async filterIngresosUnicosByFuente(fuenteIngreso: string) {
+    await this.page.getByRole('combobox').first().click()
+    await this.page.getByRole('option', { name: fuenteIngreso, exact: true }).click()
+  }
+
+  async filterIngresosUnicosByDateRange(fechaDesde: string, fechaHasta: string) {
+    await this.dateInput('Desde').fill(fechaDesde)
+    await this.dateInput('Hasta').fill(fechaHasta)
+  }
+
   async deleteIngreso(descripcion: string) {
     const ingreso = this.ingresoItem(descripcion)
 
@@ -106,5 +120,9 @@ export class IngresosPage extends BasePage {
 
   private ingresoItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
+  }
+
+  private dateInput(label: 'Desde' | 'Hasta') {
+    return this.page.locator('label', { hasText: label }).locator('..').locator('input[type="date"]')
   }
 }
