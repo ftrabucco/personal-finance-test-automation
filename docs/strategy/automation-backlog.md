@@ -53,9 +53,9 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - [x] UI coverage for category and date filters.
   - [ ] Currency filter pending backend fix for `BUG-2026-005`.
 - [x] Gastos: edit unique expense.
-- [ ] Gastos: API/UI representative flow for recurring expenses (`CF-SCH-001`).
-- [ ] Gastos: API/UI representative flow for automatic debits (`CF-SCH-002`).
-- [ ] Gastos: API/UI representative flow for purchases in installments (`CF-SCH-003`).
+- [x] Gastos: API/UI representative definition flow for recurring expenses (`CF-SCH-001`).
+- [x] Gastos: API/UI representative definition flow for automatic debits (`CF-SCH-002`).
+- [x] Gastos: API/UI representative definition flow for purchases in installments (`CF-SCH-003`).
 - [ ] Ingresos: filters by source, currency, and date.
   - [x] API coverage for source and date filters.
   - [x] UI coverage for source and date filters.
@@ -73,6 +73,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [ ] Add test coverage dashboard or markdown status table.
 - [ ] Add nightly schedule for cross-browser UI smoke.
 - [ ] Add release checklist for automation changes.
+
+## P2 - Scheduled Generation Behavior
+
+- [ ] Define controlled-clock strategy for scheduled flows.
+- [ ] Validate recurrent expense generation/non-generation by reference date.
+- [ ] Validate automatic debit generation/non-generation by reference date.
+- [ ] Validate installment purchase monthly generation and duplicate prevention.
+- [ ] Validate scheduled generated expenses in history and dashboard.
 
 ## P2 - AI Quality Orchestration
 
