@@ -87,6 +87,20 @@ export class GastosPage extends BasePage {
     await expect(this.gastoItem(descripcion)).toBeVisible()
   }
 
+  async openFilters() {
+    await this.page.getByRole('button', { name: /Filtros/ }).click()
+  }
+
+  async filterGastosUnicosByCategoria(categoria: string) {
+    await this.page.getByRole('combobox').first().click()
+    await this.page.getByRole('option', { name: categoria, exact: true }).click()
+  }
+
+  async filterGastosUnicosByDateRange(fechaDesde: string, fechaHasta: string) {
+    await this.dateInput('Desde').fill(fechaDesde)
+    await this.dateInput('Hasta').fill(fechaHasta)
+  }
+
   async deleteGasto(descripcion: string) {
     const gasto = this.gastoItem(descripcion)
 
@@ -114,5 +128,9 @@ export class GastosPage extends BasePage {
 
   private gastoItem(descripcion: string) {
     return this.page.locator('tr, div.rounded-lg').filter({ hasText: descripcion }).first()
+  }
+
+  private dateInput(label: 'Desde' | 'Hasta') {
+    return this.page.locator('label', { hasText: label }).locator('..').locator('input[type="date"]')
   }
 }
