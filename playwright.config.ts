@@ -28,9 +28,8 @@ export default defineConfig({
   expect: {
     timeout: 10_000,
   },
-  reporter: process.env.CI
-    ? [['list'], ['html', { open: 'never' }]]
-    : [['list'], ['html', { open: 'never' }]],
+  globalSetup: './src/config/globalSetup.ts',
+  reporter: [['list'], ['html', { open: 'never' }], ['./src/reporting/TriageReporter.ts']],
   use: {
     baseURL: env.baseUrl,
     trace,

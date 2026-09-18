@@ -158,6 +158,48 @@ acumular artifacts innecesarios.
    - console logs;
    - timing de cada paso.
 
+## Carpeta de triage (`triage/`)
+
+Ademas del reporte HTML nativo, `TriageReporter`
+(`src/reporting/TriageReporter.ts`) genera una carpeta autocontenida por
+ejecucion, pero solo cuando hay fallas:
+
+```text
+triage/<testRunId>/
+├── index.md                     # tabla resumen de fallas con clasificacion sugerida
+├── summary.json                 # mismo contenido en formato maquina-legible
+└── <flowId>-<test>-r<retry>-w<worker>/
+    ├── trace.zip
+    ├── video.webm
+    ├── screenshot.png
+    └── error-context.md
+```
+
+Por cada falla tambien se genera un Markdown de diagnostico
+(`<slug>.md`) junto al `index.md`, con:
+
+- metadata E2E (`testRunId`, `correlationId`, `flowId`);
+- mensaje y stack del error (sin codigos ANSI);
+- una clasificacion sugerida por heuristica
+  (`app-bug`, `test-bug`, `data-issue`, `environment-issue`,
+  `infrastructure-issue` o `unclassified`) definida en
+  `src/reporting/failureClassifier.ts`;
+- un campo `Final classification` para completar a mano.
+
+La clasificacion es solo un primer indicio, no un veredicto: siempre requiere
+revision manual antes de tratarla como bug de producto o de test.
+
+`triage/` es local y no se commitea (ver `.gitignore`), igual que
+`playwright-report/` y `test-results/`.
+
+### TEST_RUN_ID compartido
+
+`src/config/globalSetup.ts` fija `process.env.TEST_RUN_ID` una sola vez antes
+de levantar los workers, para que todos los workers y el reporter usen el
+mismo id de corrida. `getTestRunId()` en `src/utils/e2eObservability.ts` lee
+esa variable de forma perezosa (no al importar el modulo), evitando que cada
+proceso genere su propio id si se llama antes de que `globalSetup` corra.
+
 ## Cuando considerar Allure
 
 Allure seria especialmente util si queremos:
