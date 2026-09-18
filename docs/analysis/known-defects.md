@@ -89,21 +89,36 @@ by the application.
   and refetches related gasto queries after successful delete.
 - Tracking: Not created yet.
 
-## BUG-2026-005 - Gastos únicos API ignores currency filter
+## BUG-2026-005 - Gastos únicos API rejects the currency filter with a 400
 
 - Status: Open
 - Severity: Medium
 - Area: Backend API
 - Found by: `tests/api/unique-transaction-filters.destructive.spec.ts`
 - Related flow: `CF-EXP-005`
-- Evidence: `GET /gastos-unicos?moneda_origen=USD` does not apply a currency
-  predicate in the backend controller, so ARS expenses from the same date range
-  can still be returned.
+- Evidence (updated 2026-09-18, via the failure triage orchestrator on a real
+  staging destructive run): `GET /gastos-unicos?moneda_origen=USD` returns
+  `400` with `{"success":false,"error":"Error de validación","details":[{"field":"moneda_origen","message":"\"moneda_origen\" is not allowed","value":"USD"}]}`.
+  Root cause: `gastoUnicoFiltersSchema` in
+  `src/middlewares/validation.middleware.js:194-208` never listed
+  `moneda_origen` as an allowed field and uses `.unknown(false)`, so Joi
+  rejects the whole request instead of silently ignoring the field.
+  Confirmed via `git log -L` that this schema hasn't changed since it was
+  introduced (`9399edf`) — this is not a recent regression from any of the
+  last 20 merged PRs on frontend or backend, the original "ignored" wording
+  below just didn't match the actual behavior.
+- Original evidence (superseded, kept for history): `GET
+  /gastos-unicos?moneda_origen=USD` was believed to not apply a currency
+  predicate in the backend controller, so ARS expenses from the same date
+  range could still be returned.
 - Expected: Filtering by `moneda_origen=USD` should exclude ARS expenses, and
   filtering by `moneda_origen=ARS` should exclude USD expenses.
-- Actual: The query parameter is currently ignored by the gastos únicos API.
+- Actual: The request is rejected outright (`400`) because
+  `gastoUnicoFiltersSchema` doesn't allow `moneda_origen` as a query field.
 - Proposed test: Covered as an expected-failing API destructive test until the
-  backend implements the filter.
+  backend implements the filter. Fix is small: add `moneda_origen:
+  Joi.string().valid('ARS', 'USD').optional()` to `gastoUnicoFiltersSchema`
+  and implement the actual filter predicate in the controller/service.
 - Tracking: Not created yet.
 
 ## BUG-2026-006 - Perfil form fields are not prefilled when restoring an existing session
