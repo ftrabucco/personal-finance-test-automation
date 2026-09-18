@@ -28,6 +28,12 @@ const FAILING_STATUSES = new Set(['failed', 'timedOut', 'interrupted'])
  * self-contained folder per run with the original artifacts (trace, video,
  * screenshot, error-context.md) copied next to a diagnosis Markdown per
  * failure, plus an index. Writes nothing when the run is fully green.
+ *
+ * Only tests whose final outcome() is 'unexpected' are captured. A test
+ * marked with test.fail()/test.fixme() that fails exactly as annotated has
+ * result.status === 'failed' but outcome() === 'expected' - that's the
+ * intended, healthy state for a known-bug test (see BUG-2026-005's
+ * `test.fail(...)`), not something to triage or spend an LLM call on.
  */
 export default class TriageReporter implements Reporter {
   private readonly failures: FailureRecord[] = []
@@ -45,6 +51,10 @@ export default class TriageReporter implements Reporter {
 
   onTestEnd(test: TestCase, result: TestResult) {
     if (!FAILING_STATUSES.has(result.status)) {
+      return
+    }
+
+    if (test.outcome() !== 'unexpected') {
       return
     }
 
