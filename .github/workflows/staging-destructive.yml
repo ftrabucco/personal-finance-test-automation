@@ -72,3 +72,12 @@ jobs:
           path: test-results/
           if-no-files-found: ignore
           retention-days: 7
+
+      - name: Upload triage data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-staging-destructive-${{ inputs.suite }}
+          path: triage/
+          if-no-files-found: ignore
+          retention-days: 7

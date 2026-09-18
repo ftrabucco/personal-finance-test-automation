@@ -24,6 +24,7 @@
     "test:report": "playwright show-report",
     "test:prod:smoke": "TEST_ENV=prod playwright test --grep @smoke-readonly --project=api --project=chromium",
     "schema:drift:check": "node scripts/schema-drift-check.mjs",
+    "triage:orchestrate": "node scripts/triage-orchestrator.mjs",
     "install:browsers": "playwright install"
   },
   "keywords": [
@@ -35,6 +36,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@anthropic-ai/sdk": "^0.126.0",
     "@playwright/test": "^1.59.0",
     "@types/node": "^24.0.0",
     "typescript": "^5.9.0"
