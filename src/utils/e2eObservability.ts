@@ -18,10 +18,27 @@ const HEADER_NAMES = {
   flowId: 'x-e2e-flow-id',
 } as const
 
-const moduleTestRunId = process.env.TEST_RUN_ID ?? `e2e-${timestamp()}-${shortId()}`
+let cachedFallbackTestRunId: string | undefined
 
+export function generateTestRunId() {
+  return `e2e-${timestamp()}-${shortId()}`
+}
+
+/**
+ * Reads TEST_RUN_ID lazily (not at module import time) so a value set by
+ * globalSetup after this module has already been imported in another
+ * process (e.g. a worker) is still picked up consistently everywhere.
+ */
 export function getTestRunId() {
-  return moduleTestRunId
+  if (process.env.TEST_RUN_ID) {
+    return process.env.TEST_RUN_ID
+  }
+
+  if (!cachedFallbackTestRunId) {
+    cachedFallbackTestRunId = generateTestRunId()
+  }
+
+  return cachedFallbackTestRunId
 }
 
 export function buildE2EHeaders(metadata?: E2EMetadata): Record<string, string> {

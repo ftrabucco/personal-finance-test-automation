@@ -87,6 +87,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 ## P2 - AI Quality Orchestration
 
 - [x] Add `TEST_RUN_ID` generation per Playwright execution.
+  - Fixed: it was regenerated per worker process instead of shared. `globalSetup.ts` now sets it once before workers spawn; `getTestRunId()` reads `process.env.TEST_RUN_ID` lazily instead of caching it at module import time.
 - [x] Add per-test correlation metadata helper.
 - [x] Send E2E metadata headers from API clients:
   - `x-e2e-test-run-id`
@@ -94,11 +95,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - `x-e2e-flow-id`
 - [x] Add E2E entity naming convention for created data, e.g. `E2E-CF-EXP-001-<timestamp>`.
 - [x] Attach E2E metadata to Playwright test output on failure.
-- [ ] Capture Playwright failure artifacts into a triage-friendly folder.
-- [ ] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
+- [x] Capture Playwright failure artifacts into a triage-friendly folder.
+  - `TriageReporter` (`src/reporting/TriageReporter.ts`) copies trace/video/screenshot/error-context.md per failing test into `triage/<testRunId>/`. See `docs/strategy/playwright-reporting.md`.
+- [x] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
+  - Per-failure Markdown with error, stack, artifacts, and a heuristic classification hint (`src/reporting/failureClassifier.ts`) that still requires manual confirmation.
 - [ ] Add staging backend log capture by time window or correlation id.
 - [ ] Correlate failed test artifacts with backend logs.
 - [ ] Classify failures as app bug, test bug, data issue, environment issue, or infrastructure issue.
+  - Heuristic first pass already suggests a category per failure; still needs a confirmed/final classification workflow (manual or backed by data from the item above).
 - [ ] Generate a ticket-ready regression summary.
 - [ ] Optional later: create GitHub issue automatically after manual approval.
 
