@@ -20,8 +20,6 @@ test.describe('Configuration and profile UI smoke @smoke @smoke-readonly @ui @se
     authSession,
     perfilPage,
   }) => {
-    test.fail(true, 'BUG-2026-006: perfil form fields are not prefilled when restoring an existing session')
-
     await perfilPage.goto()
     await perfilPage.expectLoaded()
 
