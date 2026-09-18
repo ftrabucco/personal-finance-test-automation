@@ -62,9 +62,9 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - [ ] Currency filter pending backend support.
 - [x] Ingresos: edit unique income.
 - [x] Configuracion: read-only module state smoke.
-- [ ] Perfil: read-only account data smoke.
+- [x] Perfil: read-only account data smoke.
   - [x] Password form initial state smoke.
-  - [ ] Restored-session account data prefill pending `BUG-2026-006`.
+  - [x] Restored-session account data prefill covered by `CF-PROFILE-READ-002`.
 
 ## P2 - Advanced Portfolio Value
 
