@@ -1,0 +1,115 @@
+name: Failure Triage Orchestrator
+
+on:
+  workflow_run:
+    workflows:
+      - "PR Checks"
+      - "Staging Destructive Tests"
+    types:
+      - completed
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: Workflow run id to fetch triage data from
+        required: true
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  orchestrate:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download triage artifact
+        id: download
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.inputs.run_id || github.event.workflow_run.id }}
+          pattern: triage-*
+          path: triage-input
+          merge-multiple: true
+
+      - name: Check for triage data
+        id: check
+        run: |
+          if [ -d "triage-input" ] && [ "$(find triage-input -name summary.json | wc -l)" -gt 0 ]; then
+            echo "found=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "found=false" >> "$GITHUB_OUTPUT"
+            echo "No triage data in this run (either it was green, or it failed before tests produced artifacts)."
+          fi
+
+      - name: Setup Node
+        if: steps.check.outputs.found == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        if: steps.check.outputs.found == 'true'
+        run: npm ci
+
+      # Uses a dedicated, command-restricted SSH key (see docs/strategy/failure-orchestrator.md).
+      # The remote authorized_keys entry forces the exact `docker logs` command, so this step
+      # cannot run anything else on the server even if the key were to leak.
+      - name: Fetch staging backend logs
+        if: steps.check.outputs.found == 'true'
+        continue-on-error: true
+        env:
+          SSH_KEY: ${{ secrets.TRIAGE_SSH_KEY }}
+          SSH_HOST: ${{ secrets.SERVER_HOST }}
+          SSH_USER: ${{ secrets.TRIAGE_SSH_USER }}
+        run: |
+          mkdir -p orchestrator-context
+          if [ -z "$SSH_KEY" ]; then
+            echo "TRIAGE_SSH_KEY not configured, skipping backend log fetch." | tee orchestrator-context/backend-logs.txt
+            exit 0
+          fi
+          install -m 600 /dev/null triage_key
+          echo "$SSH_KEY" > triage_key
+          ssh -i triage_key -o StrictHostKeyChecking=accept-new "$SSH_USER@$SSH_HOST" \
+            > orchestrator-context/backend-logs.txt
+          rm -f triage_key
+
+      - name: Fetch recent pull requests
+        if: steps.check.outputs.found == 'true'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ secrets.CROSS_REPO_READ_TOKEN }}
+        run: |
+          mkdir -p orchestrator-context
+          if [ -z "$GH_TOKEN" ]; then
+            echo "CROSS_REPO_READ_TOKEN not configured, skipping PR fetch."
+            echo "[]" > orchestrator-context/frontend-prs.json
+            echo "[]" > orchestrator-context/backend-prs.json
+            exit 0
+          fi
+          gh pr list --repo ftrabucco/personal-finance-frontend --state merged --limit 10 \
+            --json number,title,mergedAt,url,author > orchestrator-context/frontend-prs.json
+          gh pr list --repo ftrabucco/personal-finance-api-nodeJS --state merged --limit 10 \
+            --json number,title,mergedAt,url,author > orchestrator-context/backend-prs.json
+
+      - name: Run orchestrator
+        if: steps.check.outputs.found == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npm run triage:orchestrate
+
+      - name: Upload root-cause report
+        if: steps.check.outputs.found == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-root-cause-${{ github.event.inputs.run_id || github.event.workflow_run.id }}
+          path: triage-input/**/orchestrator-summary.md
+          if-no-files-found: ignore
+          retention-days: 30

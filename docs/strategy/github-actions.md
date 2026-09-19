@@ -11,6 +11,10 @@ E2E_STAGING_USER_EMAIL
 E2E_STAGING_USER_PASSWORD
 ```
 
+For the Failure Triage Orchestrator workflow, see the separate secrets and
+setup runbook in
+[`failure-orchestrator.md`](failure-orchestrator.md#secrets-requeridos).
+
 The staging URLs are non-secret and live in the workflow env:
 
 ```text
@@ -84,11 +88,32 @@ If preflight fails, destructive tests should not run. This protects staging from
 partial setup issues such as wrong secrets, wrong URLs, API downtime or missing
 catalog data.
 
+## Failure Triage Orchestrator
+
+Workflow:
+
+```text
+.github/workflows/triage-orchestrator.yml
+```
+
+Triggered by `workflow_run` when `PR Checks` or `Staging Destructive Tests`
+completes with `conclusion: failure`, or manually via `workflow_dispatch`
+with a `run_id` input. Downloads the triage artifact from that run, pulls a
+window of staging backend logs and recent merged PRs, and asks Claude for a
+root-cause hypothesis per failure. See
+[`failure-orchestrator.md`](failure-orchestrator.md) for the full design and
+setup runbook.
+
 ## Artifacts
 
-Both workflows upload:
+All three workflows upload (each `if-no-files-found: ignore`):
 
 - `playwright-report/`
 - `test-results/`
+- `triage/` (only non-empty when there were failures)
 
-Artifacts are retained for 7 days.
+The orchestrator workflow additionally uploads the generated
+`orchestrator-summary.md` files as `triage-root-cause-<runId>`.
+
+Artifacts are retained for 7 days, except the orchestrator's root-cause
+report which is retained for 30 days.
