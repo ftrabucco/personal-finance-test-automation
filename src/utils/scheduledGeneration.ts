@@ -31,6 +31,17 @@ export function todayIsoDate() {
 }
 
 /**
+ * Today +/- `offsetDays`, as YYYY-MM-DD. Only for boundary dates that are
+ * many days away from today (fecha_inicio/fecha_fin fixtures) — offsets of a
+ * day or two would be subject to the same UTC-vs-Buenos-Aires ambiguity
+ * `todayInBuenosAires` exists to avoid.
+ */
+export function shiftedIsoDate(offsetDays: number) {
+  const shifted = new Date(Date.now() + offsetDays * 24 * 60 * 60 * 1000)
+  return toIsoDate(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate())
+}
+
+/**
  * A date `monthsBack` months before today, forced to `day`-of-month. Use a
  * `day` that exists in every month (1-28) to avoid clamping ambiguity in the
  * backdated fecha_compra itself.
@@ -63,4 +74,54 @@ export function regularInstallmentDate(fechaCompraIso: string, cuotaNumero0Based
 
   const clampedDay = Math.min(day, daysInMonth(targetYear, targetMonth))
   return toIsoDate(targetYear, targetMonth, clampedDay)
+}
+
+const BUENOS_AIRES_TZ = 'America/Argentina/Buenos_Aires'
+
+/**
+ * Recurring expenses / automatic debits are gated by day-of-month
+ * (`dia_de_pago`) and, for annual frequency, month-of-year (`mes_de_pago`),
+ * both compared against `moment().tz('America/Argentina/Buenos_Aires')` on
+ * the backend (see BaseRecurringStrategy.shouldGenerate). Using the test
+ * runner's local/UTC calendar date here would make these tests flaky during
+ * the ~3h window where Buenos Aires and UTC land on different calendar days
+ * — the same class of bug fixed in personal-finance-api-nodeJS PR #38 — so
+ * "today" for these tests is always computed in Buenos Aires time.
+ */
+function todayInBuenosAires() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: BUENOS_AIRES_TZ,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date())
+
+  const get = (type: string) => Number(parts.find((part) => part.type === type)?.value)
+  return { year: get('year'), month: get('month'), day: get('day') }
+}
+
+/** Today's date as YYYY-MM-DD in Buenos Aires time. */
+export function todayIsoDateBuenosAires() {
+  const { year, month, day } = todayInBuenosAires()
+  return toIsoDate(year, month - 1, day)
+}
+
+/** Today's day-of-month (1-31) in Buenos Aires time. */
+export function todayDayOfMonthBuenosAires() {
+  return todayInBuenosAires().day
+}
+
+/** Today's month-of-year (1-12) in Buenos Aires time. */
+export function todayMonthNumberBuenosAires() {
+  return todayInBuenosAires().month
+}
+
+/** A day-of-month (1-28) guaranteed to differ from `dayOfMonth`. */
+export function otherDayOfMonth(dayOfMonth: number) {
+  return dayOfMonth === 1 ? 2 : 1
+}
+
+/** A month-of-year (1-12) guaranteed to differ from `monthNumber`. */
+export function otherMonthNumber(monthNumber: number) {
+  return monthNumber === 1 ? 2 : 1
 }
