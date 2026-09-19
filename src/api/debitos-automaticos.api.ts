@@ -70,6 +70,13 @@ export class DebitosAutomaticosApiClient extends BaseApiClient {
     })
   }
 
+  async update(token: string, id: number, data: Partial<DebitoAutomaticoRequest>, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl(`/debitos-automaticos/${id}`), {
+      headers: this.authHeaders(token, metadata),
+      data,
+    })
+  }
+
   async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/debitos-automaticos/${id}`), {
       headers: this.authHeaders(token, metadata),

@@ -37,7 +37,7 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - [x] Add `GastoRecurrenteBuilder` and API client.
   - [x] Add `CompraBuilder` and API client.
   - [x] Add `DebitoAutomaticoBuilder` and API client.
-  - [ ] Add update/process methods when coverage reaches edit and monthly generation flows.
+  - [x] Add `update` methods for `GastosRecurrentesApiClient`/`DebitosAutomaticosApiClient` (needed to reach the monthly-generation coverage below). No dedicated edit-flow test yet.
 - [x] Add per-suite validation matrix in docs.
 - [x] Add richer assertions helpers for UI and API responses.
 - [x] Add CI HTML report artifact upload.
@@ -78,10 +78,14 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 
 ## P2 - Scheduled Generation Behavior
 
-- [ ] Define controlled-clock strategy for scheduled flows.
-- [ ] Validate recurrent expense generation/non-generation by reference date.
-- [ ] Validate automatic debit generation/non-generation by reference date.
-- [ ] Validate installment purchase monthly generation and duplicate prevention.
+- [x] Define controlled-clock strategy for scheduled flows.
+  - No reference-date override exists on the backend (`GET /gastos/generate` always runs against the real clock), so tests control the *data* (backdated `fecha_compra`/`fecha_inicio`, `dia_de_pago` set to today) instead of the clock. Date math lives in `src/utils/scheduledGeneration.ts`, mirroring the backend's own day-clamping rule and computing "today" in Buenos Aires time (not the test runner's local/UTC time) to avoid the same class of timezone bug fixed in `personal-finance-api-nodeJS` PR #38.
+- [x] Validate recurrent expense generation/non-generation by reference date (`CF-SCH-GEN-002`).
+  - Covers: generates on payment day, respects `fecha_inicio`, skips inactive definitions, prevents same-day duplicates.
+  - Found a real backend bug along the way: `POST /gastos-recurrentes` and `POST /debitos-automaticos` hardcode `activo: true` in the controller, ignoring the request body's `activo` field — you cannot create either as inactive. Worked around in the test by creating then deactivating via `PUT` (which does respect it). Not fixed here — flag to Fran.
+- [x] Validate automatic debit generation/non-generation by reference date (`CF-SCH-GEN-003`).
+  - Same coverage as recurring expenses, minus the `fecha_inicio` case (not settable via the create payload for débitos automáticos).
+- [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`).
 - [ ] Validate scheduled generated expenses in history and dashboard.
 
 ## P2 - AI Quality Orchestration
