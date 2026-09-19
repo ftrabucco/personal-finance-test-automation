@@ -51,6 +51,55 @@ export class GastosApiClient extends BaseApiClient {
 
     return extractGastosConsolidados(body).filter((gasto) => gasto.descripcion === descripcion)
   }
+
+  /**
+   * Triggers the backend's manual scheduled-generation pass (recurring expenses,
+   * automatic debits, installment purchases and pending gastos únicos) for the
+   * authenticated user, with catch-up enabled. Runs against the real clock —
+   * there is no reference-date override on the backend, so scheduled-generation
+   * tests control the *data* (backdated fecha_compra/fecha_inicio) instead of
+   * the clock. See docs/strategy/automation-backlog.md, "Scheduled Generation Behavior".
+   */
+  async generatePending(token: string, metadata?: E2EMetadata) {
+    return this.request.get(this.apiUrl('/gastos/generate'), {
+      headers: this.authHeaders(token, metadata),
+    })
+  }
+
+  async delete(token: string, id: number, metadata?: E2EMetadata) {
+    return this.request.delete(this.apiUrl(`/gastos/${id}`), {
+      headers: this.authHeaders(token, metadata),
+    })
+  }
+
+  async deleteMany(token: string, ids: number[], metadata?: E2EMetadata) {
+    return Promise.all(ids.map((id) => this.delete(token, id, metadata)))
+  }
+}
+
+export interface GeneratePendingSummary {
+  total_generated: number
+  total_errors: number
+  breakdown: {
+    recurrentes: number
+    debitos: number
+    compras: number
+    unicos: number
+  }
+  type: 'manual'
+}
+
+export interface GeneratePendingResponse {
+  success: boolean
+  data?: {
+    summary: GeneratePendingSummary
+    details: {
+      success: Array<{ type: string; id: number; source_id?: number }>
+      errors: Array<{ type: string; id: number; error: string }>
+    }
+    scheduled_summary?: unknown
+  }
+  message?: string
 }
 
 export function extractGastosConsolidados(body: GastosListResponse): GastoResponseItem[] {
