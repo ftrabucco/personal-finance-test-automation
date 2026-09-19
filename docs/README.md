@@ -22,6 +22,7 @@ docs/
 │   ├── automation-backlog.md
 │   ├── defect-discovery-policy.md
 │   ├── e2e-observability.md
+│   ├── failure-orchestrator.md
 │   ├── github-actions.md
 │   ├── git-strategy.md
 │   ├── flaky-test-policy.md
@@ -80,6 +81,10 @@ La politica para registrar bugs descubiertos al automatizar se encuentra en
 [`strategy/defect-discovery-policy.md`](strategy/defect-discovery-policy.md), y
 el registro vivo de defectos en
 [`analysis/known-defects.md`](analysis/known-defects.md).
+
+El orquestador que correlaciona fallas de Playwright con logs de staging y
+PRs recientes se encuentra en
+[`strategy/failure-orchestrator.md`](strategy/failure-orchestrator.md).
 
 ## Flujo de trabajo
 

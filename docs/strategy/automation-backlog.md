@@ -99,10 +99,12 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - `TriageReporter` (`src/reporting/TriageReporter.ts`) copies trace/video/screenshot/error-context.md per failing test into `triage/<testRunId>/`. See `docs/strategy/playwright-reporting.md`.
 - [x] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
   - Per-failure Markdown with error, stack, artifacts, and a heuristic classification hint (`src/reporting/failureClassifier.ts`) that still requires manual confirmation.
-- [ ] Add staging backend log capture by time window or correlation id.
-- [ ] Correlate failed test artifacts with backend logs.
+- [x] Add staging backend log capture by time window or correlation id.
+  - `.github/workflows/triage-orchestrator.yml` pulls a fixed time window of backend logs over a command-restricted SSH key. See `docs/strategy/failure-orchestrator.md`.
+- [x] Correlate failed test artifacts with backend logs.
+  - `scripts/triage-orchestrator.mjs` feeds the triage summary + backend logs + recent merged PRs (frontend and backend) to Claude to produce a root-cause hypothesis per run, written to `orchestrator-summary.md`. Still a first-pass hint requiring manual confirmation, not an automated verdict.
 - [ ] Classify failures as app bug, test bug, data issue, environment issue, or infrastructure issue.
-  - Heuristic first pass already suggests a category per failure; still needs a confirmed/final classification workflow (manual or backed by data from the item above).
+  - Heuristic first pass already suggests a category per failure (`failureClassifier.ts`), and the orchestrator now proposes a second, evidence-backed category with confidence. Still needs a confirmed/final classification workflow.
 - [ ] Generate a ticket-ready regression summary.
 - [ ] Optional later: create GitHub issue automatically after manual approval.
 
