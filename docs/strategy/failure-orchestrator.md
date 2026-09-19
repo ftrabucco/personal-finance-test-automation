@@ -56,10 +56,27 @@ orchestrator, descargable desde GitHub Actions.
 | `TRIAGE_SSH_KEY` | Leer logs del backend de staging por SSH | Key dedicada, restringida por `command=` a un unico comando de lectura. **No** es la misma que `SERVER_SSH_KEY` del deploy. |
 | `TRIAGE_SSH_USER` | Usuario SSH asociado a esa key | Usuario nuevo y de baja fricción de revocar, separado del usuario de deploy. |
 | `CROSS_REPO_READ_TOKEN` | Leer PRs mergeados de frontend y backend | Fine-grained PAT, solo lectura, scoped a los 3 repos. |
-| `ANTHROPIC_API_KEY` | Llamar a la API de Claude | Key de cuenta de Anthropic. |
+| `ANTHROPIC_API_KEY` | Llamar a la API de Claude | Key de cuenta de Anthropic. **Pendiente** (ver estado abajo). |
 
 `SERVER_HOST` se reutiliza del secret que ya existe para el deploy (mismo
 servidor, no hace falta duplicarlo).
+
+### Estado actual (2026-09-18)
+
+- `TRIAGE_SSH_KEY` / `TRIAGE_SSH_USER`: cargados y verificados con datos
+  reales (la metadata E2E ya aparece en `docker logs finanzas-api-test` en
+  producción de staging).
+- `CROSS_REPO_READ_TOKEN`: cargado y probado trayendo PRs reales de los 3
+  repos.
+- `ANTHROPIC_API_KEY`: **pendiente a propósito.** El plan Pro de Claude no
+  incluye acceso a la API (son productos separados, con facturación propia
+  en `console.anthropic.com`). Se decidió no darlo de alta todavía; mientras
+  tanto el orchestrator sigue funcionando en modo dry-run automáticamente
+  (`scripts/triage-orchestrator.mjs` cae a dry-run cuando no encuentra esta
+  key), así que no bloquea nada. Se evaluó tambien usar otro proveedor
+  (OpenAI/Gemini) como alternativa mas barata para probar — sigue abierto,
+  `callClaude()` esta aislado en una sola funcion para que el cambio de
+  proveedor sea chico el dia que se decida.
 
 Si alguno de estos secrets no esta configurado, los pasos correspondientes
 degradan con gracia (log de "no configurado" en vez de romper el job), asi

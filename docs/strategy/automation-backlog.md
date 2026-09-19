@@ -100,9 +100,10 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Generate a first failure diagnosis Markdown from Playwright output and `error-context.md`.
   - Per-failure Markdown with error, stack, artifacts, and a heuristic classification hint (`src/reporting/failureClassifier.ts`) that still requires manual confirmation.
 - [x] Add staging backend log capture by time window or correlation id.
-  - `.github/workflows/triage-orchestrator.yml` pulls a fixed time window of backend logs over a command-restricted SSH key. See `docs/strategy/failure-orchestrator.md`.
+  - `.github/workflows/triage-orchestrator.yml` pulls a fixed time window of backend logs over a command-restricted SSH key. Verified against real staging logs: E2E metadata (`testRunId`/`correlationId`/`flowId`) does show up in `docker logs finanzas-api-test`. See `docs/strategy/failure-orchestrator.md`.
 - [x] Correlate failed test artifacts with backend logs.
-  - `scripts/triage-orchestrator.mjs` feeds the triage summary + backend logs + recent merged PRs (frontend and backend) to Claude to produce a root-cause hypothesis per run, written to `orchestrator-summary.md`. Still a first-pass hint requiring manual confirmation, not an automated verdict.
+  - `scripts/triage-orchestrator.mjs` feeds the triage summary + backend logs + recent merged PRs (frontend and backend) to Claude to produce a root-cause hypothesis per run, written to `orchestrator-summary.md`. Wiring verified end-to-end with real data (real triage failure + real merged PRs) in dry-run mode. Still a first-pass hint requiring manual confirmation, not an automated verdict.
+  - `ANTHROPIC_API_KEY` deliberately not configured yet (Claude Pro subscription doesn't include API access; needs a separate console.anthropic.com account with its own billing, or a different provider). Orchestrator degrades to dry-run without it, so this doesn't block anything — see `docs/strategy/failure-orchestrator.md#estado-actual-2026-09-18`.
 - [ ] Classify failures as app bug, test bug, data issue, environment issue, or infrastructure issue.
   - Heuristic first pass already suggests a category per failure (`failureClassifier.ts`), and the orchestrator now proposes a second, evidence-backed category with confidence. Still needs a confirmed/final classification workflow.
 - [ ] Generate a ticket-ready regression summary.
