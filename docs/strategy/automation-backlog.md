@@ -86,9 +86,9 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Validate automatic debit generation/non-generation by reference date (`CF-SCH-GEN-003`).
   - Same coverage as recurring expenses, minus the `fecha_inicio` case (not settable via the create payload for débitos automáticos).
 - [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`, parametrized for 4 and 6 cuotas to exercise the catch-up loop beyond a single hardcoded size).
-- [ ] Validate scheduled generated expenses in history and dashboard.
-  - [x] History: a scheduled-generated gasto is retrievable via `tipo_origen`+`id_origen` filters and via date-range filters on `GET /gastos` (`CF-SCH-GEN-004`).
-  - [ ] Dashboard: scheduled-generated gastos reflected in the "Gastos del Mes" UI total (pending — the `CF-DASH-001` pattern with a manually-created gasto exists in `tests/ui/dashboard.destructive.spec.ts`, needs the equivalent triggered by `/gastos/generate`).
+- [x] Validate scheduled generated expenses in history and dashboard.
+  - History: a scheduled-generated gasto is retrievable via `tipo_origen`+`id_origen` filters and via date-range filters on `GET /gastos` (`CF-SCH-GEN-004`).
+  - Dashboard: a gasto recurrente generated via `/gastos/generate` (not a direct create) is reflected in the "Gastos del Mes" UI total, same assertion pattern as `CF-DASH-001` (`CF-SCH-GEN-005`, `tests/ui/scheduled-generation.destructive.spec.ts`). Verified locally with both the API and the frontend dev server running.
 
 ## P2 - AI Quality Orchestration
 
