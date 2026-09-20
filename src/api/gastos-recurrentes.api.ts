@@ -67,6 +67,13 @@ export class GastosRecurrentesApiClient extends BaseApiClient {
     })
   }
 
+  async update(token: string, id: number, data: Partial<GastoRecurrenteRequest>, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl(`/gastos-recurrentes/${id}`), {
+      headers: this.authHeaders(token, metadata),
+      data,
+    })
+  }
+
   async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/gastos-recurrentes/${id}`), {
       headers: this.authHeaders(token, metadata),
