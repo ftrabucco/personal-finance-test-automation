@@ -85,8 +85,10 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - Found a real backend bug along the way: `POST /gastos-recurrentes` and `POST /debitos-automaticos` hardcode `activo: true` in the controller, ignoring the request body's `activo` field — you cannot create either as inactive. Worked around in the test by creating then deactivating via `PUT` (which does respect it). Not fixed here — flag to Fran.
 - [x] Validate automatic debit generation/non-generation by reference date (`CF-SCH-GEN-003`).
   - Same coverage as recurring expenses, minus the `fecha_inicio` case (not settable via the create payload for débitos automáticos).
-- [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`).
+- [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`, parametrized for 4 and 6 cuotas to exercise the catch-up loop beyond a single hardcoded size).
 - [ ] Validate scheduled generated expenses in history and dashboard.
+  - [x] History: a scheduled-generated gasto is retrievable via `tipo_origen`+`id_origen` filters and via date-range filters on `GET /gastos` (`CF-SCH-GEN-004`).
+  - [ ] Dashboard: scheduled-generated gastos reflected in the "Gastos del Mes" UI total (pending — the `CF-DASH-001` pattern with a manually-created gasto exists in `tests/ui/dashboard.destructive.spec.ts`, needs the equivalent triggered by `/gastos/generate`).
 
 ## P2 - AI Quality Orchestration
 
