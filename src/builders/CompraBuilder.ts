@@ -45,6 +45,11 @@ export class CompraBuilder {
     return this
   }
 
+  withTarjetaId(tarjetaId: number | null) {
+    this.data.tarjeta_id = tarjetaId
+    return this
+  }
+
   withCatalogos(ids: CatalogoIds) {
     this.data = {
       ...this.data,
@@ -71,6 +76,6 @@ export class CompraBuilder {
       }
     }
 
-    return this.data as CompraRequest
+    return { ...this.data } as CompraRequest
   }
 }

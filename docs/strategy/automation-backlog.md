@@ -89,6 +89,12 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Validate scheduled generated expenses in history and dashboard.
   - History: a scheduled-generated gasto is retrievable via `tipo_origen`+`id_origen` filters and via date-range filters on `GET /gastos` (`CF-SCH-GEN-004`).
   - Dashboard: a gasto recurrente generated via `/gastos/generate` (not a direct create) is reflected in the "Gastos del Mes" UI total, same assertion pattern as `CF-DASH-001` (`CF-SCH-GEN-005`, `tests/ui/scheduled-generation.destructive.spec.ts`). Verified locally with both the API and the frontend dev server running.
+- [x] Validate installment purchases paid with a credit card (due-date cycle) and concurrent-generation duplicate prevention.
+  - New `TarjetasApiClient`/`TarjetaBuilder` (`src/api/tarjetas.api.ts`, `src/builders/TarjetaBuilder.ts`) and `creditCardDueDate()` in `scheduledGeneration.ts`, mirroring the backend's `CreditCardDateService` closing/due-cycle math.
+  - `CF-SCH-GEN-006`: catch-up of missed credit-card cuotas, purchase made before the card's closing day.
+  - `CF-SCH-GEN-008`: purchase made *after* the closing day is due a full cycle later.
+  - `CF-SCH-GEN-007`: two concurrent `/gastos/generate` calls against the same compra must not create two gastos for the same cuota. This caught a real, confirmed race condition — fixed in `personal-finance-api-nodeJS` PR #39 (the local dev DB already had real duplicate rows from it, e.g. 8 copies of the same gasto recurrente on one date). The test failed intermittently against `master`/pre-fix and now passes reliably (10/10 local runs) against the fix.
+  - Fixed a latent bug in the test builders while writing these: `build()` returned the builder's internal data object by reference, so building several payloads from the same builder instance (without sending each immediately) let later `.withX()` calls mutate earlier "built" payloads still waiting to be used. All builders now return a shallow copy.
 
 ## P2 - AI Quality Orchestration
 

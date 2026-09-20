@@ -2,6 +2,7 @@ import { test, expect } from '@fixtures/test'
 import { expectDefined, expectSuccessfulResponse } from '@assertions/apiAssertions'
 import { isDestructiveTestsAllowed, requireDestructiveTestsAllowed } from '@config/safety'
 import {
+  creditCardDueDate,
   monthsAgoIsoDate,
   regularInstallmentDate,
   shiftedIsoDate,
@@ -455,6 +456,321 @@ test.describe('Scheduled generation API destructive @destructive @api @gastos @c
       }
       if (gastoRecurrenteId) {
         await gastosRecurrentesApi.delete(authSession.token, gastoRecurrenteId)
+      }
+    }
+  })
+
+  test('CF-SCH-GEN-006 catches up all missed credit-card installments using their real due dates (closing/due cycle), with no duplicates', async ({
+    authSession,
+    catalogosApi,
+    comprasApi,
+    compraBuilder,
+    tarjetasApi,
+    tarjetaBuilder,
+    gastosApi,
+    e2eContext,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    let tarjetaId: number | undefined
+    let compraId: number | undefined
+    const generatedGastoIds: number[] = []
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+
+      const categoria = catalogosBody.data?.categorias?.[0]
+      const importancia = catalogosBody.data?.importancias?.[0]
+      // "Crédito" specifically (permite_cuotas: true in the seed data), not
+      // just tiposPago[0] ("Efectivo") — this scenario only makes sense paid
+      // with a card.
+      const tipoPagoCredito = catalogosBody.data?.tiposPago?.find(
+        (tipoPago) => tipoPago.nombre?.toLowerCase() === 'crédito',
+      )
+
+      expectDefined(categoria, 'Expected at least one expense category.')
+      expectDefined(importancia, 'Expected at least one expense importance.')
+      expectDefined(tipoPagoCredito, 'Expected a "Crédito" payment type in the catalog.')
+
+      const diaMesCierre = 20
+      const diaMesVencimiento = 10
+
+      const tarjetaResponse = await tarjetasApi.create(
+        authSession.token,
+        tarjetaBuilder
+          .withNombre(e2eContext.entityName('Tarjeta-Catchup'))
+          .withDiaMesCierre(diaMesCierre)
+          .withDiaMesVencimiento(diaMesVencimiento)
+          .build(),
+      )
+      const tarjetaBody = await expectSuccessfulResponse(tarjetaResponse)
+      tarjetaId = tarjetaBody.data?.id ?? tarjetaBody.data?.tarjeta?.id
+      expect(tarjetaId).toBeTruthy()
+
+      // Bought on day 1, well before dia_mes_cierre (20), so the first cuota's
+      // due date is exactly one month after the purchase month, on day 10.
+      // Backdated 5 months so that even the *last* (4th) cuota's due date —
+      // purchase month + 1 + 3 = purchase month + 4 — lands a full calendar
+      // month before today, regardless of what day of the month this test
+      // happens to run on (unlike CF-SCH-GEN-001's day-1 cuotas, day-10 due
+      // dates need that extra month of margin to always be "already due").
+      const cantidadCuotas = 4
+      const fechaCompra = monthsAgoIsoDate(5, 1)
+      const descripcion = e2eContext.entityName('Compra-Tarjeta-Catchup')
+
+      const compra = compraBuilder
+        .withDescripcion(descripcion)
+        .withMontoTotal(4000)
+        .withCantidadCuotas(cantidadCuotas)
+        .withFechaCompra(fechaCompra)
+        .withTarjetaId(tarjetaId!)
+        .withCatalogos({
+          categoria_gasto_id: categoria.id,
+          importancia_gasto_id: importancia.id,
+          tipo_pago_id: tipoPagoCredito.id,
+        })
+        .build()
+
+      const createResponse = await comprasApi.create(authSession.token, compra)
+      const createBody = await expectSuccessfulResponse(createResponse)
+      const createdCompra = createBody.data?.compra ?? createBody.data
+      compraId = createdCompra?.id
+      expect(compraId).toBeTruthy()
+
+      // Same off-by-one-day storage quirk as CF-SCH-GEN-001 applies to
+      // fecha_compra here too — base expected due dates on what was stored.
+      const storedFechaCompra: string = createdCompra.fecha_compra
+
+      for (let cuotaNumero1Based = 1; cuotaNumero1Based <= cantidadCuotas; cuotaNumero1Based++) {
+        const generateResponse = await gastosApi.generatePending(authSession.token)
+        const generateBody = (await expectSuccessfulResponse(generateResponse)) as GeneratePendingResponse
+        expect(generateBody.data?.summary.breakdown.compras).toBeGreaterThanOrEqual(1)
+
+        const expectedDescripcion = `${descripcion} - Cuota ${cuotaNumero1Based}/${cantidadCuotas}`
+        const expectedFecha = creditCardDueDate(storedFechaCompra, diaMesCierre, diaMesVencimiento, cuotaNumero1Based - 1)
+
+        const matches = await gastosApi.findByDescription(authSession.token, expectedDescripcion)
+        expect(matches, `Expected cuota ${cuotaNumero1Based}/${cantidadCuotas} after generate() call #${cuotaNumero1Based}`).toHaveLength(1)
+        expect(matches[0].fecha).toBe(expectedFecha)
+
+        generatedGastoIds.push(matches[0].id)
+      }
+
+      const compraAfterCatchUp = await comprasApi.getById(authSession.token, compraId!)
+      const compraAfterCatchUpBody = await expectSuccessfulResponse(compraAfterCatchUp)
+      const compraState = compraAfterCatchUpBody.data?.compra ?? compraAfterCatchUpBody.data
+      expect(compraState.pendiente_cuotas).toBe(false)
+
+      // Duplicate prevention: fully generated, a further manual run must not
+      // create a 5th gasto for it.
+      const extraGenerateResponse = await gastosApi.generatePending(authSession.token)
+      await expectSuccessfulResponse(extraGenerateResponse)
+
+      const allCuotas = await Promise.all(
+        Array.from({ length: cantidadCuotas }, (_, index) =>
+          gastosApi.findByDescription(authSession.token, `${descripcion} - Cuota ${index + 1}/${cantidadCuotas}`),
+        ),
+      )
+      for (const match of allCuotas) {
+        expect(match).toHaveLength(1)
+      }
+    } finally {
+      if (generatedGastoIds.length > 0) {
+        await gastosApi.deleteMany(authSession.token, generatedGastoIds)
+      }
+      if (compraId) {
+        const deleteResponse = await comprasApi.delete(authSession.token, compraId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+      if (tarjetaId) {
+        const deleteResponse = await tarjetasApi.delete(authSession.token, tarjetaId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+    }
+  })
+
+  test('CF-SCH-GEN-007 concurrent /gastos/generate calls do not duplicate a credit-card cuota', async ({
+    authSession,
+    catalogosApi,
+    comprasApi,
+    compraBuilder,
+    tarjetasApi,
+    tarjetaBuilder,
+    gastosApi,
+    e2eContext,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    let tarjetaId: number | undefined
+    let compraId: number | undefined
+    const generatedGastoIds: number[] = []
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+
+      const categoria = catalogosBody.data?.categorias?.[0]
+      const importancia = catalogosBody.data?.importancias?.[0]
+      const tipoPagoCredito = catalogosBody.data?.tiposPago?.find(
+        (tipoPago) => tipoPago.nombre?.toLowerCase() === 'crédito',
+      )
+
+      expectDefined(categoria, 'Expected at least one expense category.')
+      expectDefined(importancia, 'Expected at least one expense importance.')
+      expectDefined(tipoPagoCredito, 'Expected a "Crédito" payment type in the catalog.')
+
+      const tarjetaResponse = await tarjetasApi.create(
+        authSession.token,
+        tarjetaBuilder.withNombre(e2eContext.entityName('Tarjeta-Race')).build(),
+      )
+      const tarjetaBody = await expectSuccessfulResponse(tarjetaResponse)
+      tarjetaId = tarjetaBody.data?.id ?? tarjetaBody.data?.tarjeta?.id
+      expect(tarjetaId).toBeTruthy()
+
+      // Single cuota, comfortably already due, so a single generate() call is
+      // guaranteed to find it ready — this isolates the race from any
+      // multi-cuota catch-up sequencing.
+      const descripcion = e2eContext.entityName('Compra-Tarjeta-Race')
+      const compra = compraBuilder
+        .withDescripcion(descripcion)
+        .withMontoTotal(1000)
+        .withCantidadCuotas(1)
+        .withFechaCompra(monthsAgoIsoDate(2, 1))
+        .withTarjetaId(tarjetaId!)
+        .withCatalogos({
+          categoria_gasto_id: categoria.id,
+          importancia_gasto_id: importancia.id,
+          tipo_pago_id: tipoPagoCredito.id,
+        })
+        .build()
+
+      const createResponse = await comprasApi.create(authSession.token, compra)
+      const createBody = await expectSuccessfulResponse(createResponse)
+      compraId = (createBody.data?.compra ?? createBody.data)?.id
+      expect(compraId).toBeTruthy()
+
+      // Two /gastos/generate calls in flight at the same time — e.g. a
+      // scheduled cron run overlapping a manual "process now" click. Both
+      // read `cuotasGeneradas` (via a Gasto.count query) before either has
+      // committed its own insert, so both can independently decide "this
+      // cuota isn't generated yet" and both create it.
+      const [firstResponse, secondResponse] = await Promise.all([
+        gastosApi.generatePending(authSession.token),
+        gastosApi.generatePending(authSession.token),
+      ])
+      await expectSuccessfulResponse(firstResponse)
+      await expectSuccessfulResponse(secondResponse)
+
+      const matches = await gastosApi.findByDescription(authSession.token, `${descripcion} - Cuota 1/1`)
+      generatedGastoIds.push(...matches.map((match) => match.id))
+      expect(matches, 'Two concurrent generate() calls must not produce two gastos for the same cuota').toHaveLength(1)
+    } finally {
+      if (generatedGastoIds.length > 0) {
+        await gastosApi.deleteMany(authSession.token, generatedGastoIds)
+      }
+      if (compraId) {
+        const deleteResponse = await comprasApi.delete(authSession.token, compraId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+      if (tarjetaId) {
+        const deleteResponse = await tarjetasApi.delete(authSession.token, tarjetaId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+    }
+  })
+
+  test('CF-SCH-GEN-008 a credit-card purchase made after the closing day is due one cycle later', async ({
+    authSession,
+    catalogosApi,
+    comprasApi,
+    compraBuilder,
+    tarjetasApi,
+    tarjetaBuilder,
+    gastosApi,
+    e2eContext,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    let tarjetaId: number | undefined
+    let compraId: number | undefined
+    const generatedGastoIds: number[] = []
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+
+      const categoria = catalogosBody.data?.categorias?.[0]
+      const importancia = catalogosBody.data?.importancias?.[0]
+      const tipoPagoCredito = catalogosBody.data?.tiposPago?.find(
+        (tipoPago) => tipoPago.nombre?.toLowerCase() === 'crédito',
+      )
+
+      expectDefined(categoria, 'Expected at least one expense category.')
+      expectDefined(importancia, 'Expected at least one expense importance.')
+      expectDefined(tipoPagoCredito, 'Expected a "Crédito" payment type in the catalog.')
+
+      const diaMesCierre = 20
+      const diaMesVencimiento = 10
+
+      const tarjetaResponse = await tarjetasApi.create(
+        authSession.token,
+        tarjetaBuilder
+          .withNombre(e2eContext.entityName('Tarjeta-PostCierre'))
+          .withDiaMesCierre(diaMesCierre)
+          .withDiaMesVencimiento(diaMesVencimiento)
+          .build(),
+      )
+      const tarjetaBody = await expectSuccessfulResponse(tarjetaResponse)
+      tarjetaId = tarjetaBody.data?.id ?? tarjetaBody.data?.tarjeta?.id
+      expect(tarjetaId).toBeTruthy()
+
+      // Bought on day 25, *after* dia_mes_cierre (20) — this purchase belongs
+      // to next month's closing cycle, so it's due a full month later than an
+      // otherwise-identical purchase made before the 20th (CF-SCH-GEN-006).
+      // Backdated 3 months (not 2) so the due date lands safely in the past
+      // regardless of what day of the month this test runs on.
+      const descripcion = e2eContext.entityName('Compra-Tarjeta-PostCierre')
+      const compra = compraBuilder
+        .withDescripcion(descripcion)
+        .withMontoTotal(1000)
+        .withCantidadCuotas(1)
+        .withFechaCompra(monthsAgoIsoDate(3, 25))
+        .withTarjetaId(tarjetaId!)
+        .withCatalogos({
+          categoria_gasto_id: categoria.id,
+          importancia_gasto_id: importancia.id,
+          tipo_pago_id: tipoPagoCredito.id,
+        })
+        .build()
+
+      const createResponse = await comprasApi.create(authSession.token, compra)
+      const createBody = await expectSuccessfulResponse(createResponse)
+      const createdCompra = createBody.data?.compra ?? createBody.data
+      compraId = createdCompra?.id
+      expect(compraId).toBeTruthy()
+
+      const storedFechaCompra: string = createdCompra.fecha_compra
+      const expectedFecha = creditCardDueDate(storedFechaCompra, diaMesCierre, diaMesVencimiento, 0)
+
+      const generateResponse = await gastosApi.generatePending(authSession.token)
+      await expectSuccessfulResponse(generateResponse)
+
+      const matches = await gastosApi.findByDescription(authSession.token, `${descripcion} - Cuota 1/1`)
+      expect(matches, 'Expected the post-cierre purchase to generate its single cuota').toHaveLength(1)
+      generatedGastoIds.push(matches[0].id)
+      expect(matches[0].fecha).toBe(expectedFecha)
+    } finally {
+      if (generatedGastoIds.length > 0) {
+        await gastosApi.deleteMany(authSession.token, generatedGastoIds)
+      }
+      if (compraId) {
+        const deleteResponse = await comprasApi.delete(authSession.token, compraId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+      if (tarjetaId) {
+        const deleteResponse = await tarjetasApi.delete(authSession.token, tarjetaId)
+        await expectSuccessfulResponse(deleteResponse)
       }
     }
   })

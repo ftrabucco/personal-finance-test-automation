@@ -76,6 +76,52 @@ export function regularInstallmentDate(fechaCompraIso: string, cuotaNumero0Based
   return toIsoDate(targetYear, targetMonth, clampedDay)
 }
 
+function addMonthsWithDay(year: number, monthIndex0: number, months: number, day: number) {
+  let targetMonth = monthIndex0 + months
+  const targetYear = year + Math.floor(targetMonth / 12)
+  targetMonth = ((targetMonth % 12) + 12) % 12
+  const clampedDay = Math.min(day, daysInMonth(targetYear, targetMonth))
+  return { year: targetYear, month: targetMonth, day: clampedDay }
+}
+
+/**
+ * Mirrors the backend's CreditCardDateService.calculateDueDate: the first
+ * cuota's due date depends on whether fecha_compra falls on/before or after
+ * the card's closing day (dia_mes_cierre) for that month — before/on close,
+ * it's due next month; after close, one cycle later. Every subsequent cuota
+ * is exactly `cuotaNumero0Based` months after the first cuota's due date,
+ * with the day clamped to the target month's length.
+ */
+export function creditCardDueDate(
+  fechaCompraIso: string,
+  diaCierre: number,
+  diaVencimiento: number,
+  cuotaNumero0Based: number,
+) {
+  const [year, month, day] = fechaCompraIso.split('-').map(Number)
+  const compraMonth0 = month - 1
+
+  const cierreDayThisMonth = Math.min(diaCierre, daysInMonth(year, compraMonth0))
+  const compraOnOrBeforeCierre = day <= cierreDayThisMonth
+
+  let cycleCloseYear = year
+  let cycleCloseMonth0 = compraMonth0
+  if (!compraOnOrBeforeCierre) {
+    const nextClose = addMonthsWithDay(year, compraMonth0, 1, diaCierre)
+    cycleCloseYear = nextClose.year
+    cycleCloseMonth0 = nextClose.month
+  }
+
+  const firstDue = addMonthsWithDay(cycleCloseYear, cycleCloseMonth0, 1, diaVencimiento)
+
+  if (cuotaNumero0Based === 0) {
+    return toIsoDate(firstDue.year, firstDue.month, firstDue.day)
+  }
+
+  const subsequentDue = addMonthsWithDay(firstDue.year, firstDue.month, cuotaNumero0Based, diaVencimiento)
+  return toIsoDate(subsequentDue.year, subsequentDue.month, subsequentDue.day)
+}
+
 const BUENOS_AIRES_TZ = 'America/Argentina/Buenos_Aires'
 
 /**
