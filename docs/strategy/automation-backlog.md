@@ -85,8 +85,19 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - Found a real backend bug along the way: `POST /gastos-recurrentes` and `POST /debitos-automaticos` hardcode `activo: true` in the controller, ignoring the request body's `activo` field — you cannot create either as inactive. Worked around in the test by creating then deactivating via `PUT` (which does respect it). Not fixed here — flag to Fran.
 - [x] Validate automatic debit generation/non-generation by reference date (`CF-SCH-GEN-003`).
   - Same coverage as recurring expenses, minus the `fecha_inicio` case (not settable via the create payload for débitos automáticos).
-- [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`).
-- [ ] Validate scheduled generated expenses in history and dashboard.
+- [x] Validate installment purchase monthly generation and duplicate prevention (`CF-SCH-GEN-001`, parametrized for 4 and 6 cuotas to exercise the catch-up loop beyond a single hardcoded size).
+- [x] Validate scheduled generated expenses in history and dashboard.
+  - History: a scheduled-generated gasto is retrievable via `tipo_origen`+`id_origen` filters and via date-range filters on `GET /gastos` (`CF-SCH-GEN-004`).
+  - Dashboard: a gasto recurrente generated via `/gastos/generate` (not a direct create) is reflected in the "Gastos del Mes" UI total, same assertion pattern as `CF-DASH-001` (`CF-SCH-GEN-005`, `tests/ui/scheduled-generation.destructive.spec.ts`). Verified locally with both the API and the frontend dev server running.
+- [x] Validate installment purchases paid with a credit card (due-date cycle) and concurrent-generation duplicate prevention.
+  - New `TarjetasApiClient`/`TarjetaBuilder` (`src/api/tarjetas.api.ts`, `src/builders/TarjetaBuilder.ts`) and `creditCardDueDate()` in `scheduledGeneration.ts`, mirroring the backend's `CreditCardDateService` closing/due-cycle math.
+  - `CF-SCH-GEN-006`: catch-up of missed credit-card cuotas, purchase made before the card's closing day.
+  - `CF-SCH-GEN-008`: purchase made *after* the closing day is due a full cycle later.
+  - `CF-SCH-GEN-007`: two concurrent `/gastos/generate` calls against the same compra must not create two gastos for the same cuota. This caught a real, confirmed race condition — fixed in `personal-finance-api-nodeJS` PR #39 (the local dev DB already had real duplicate rows from it, e.g. 8 copies of the same gasto recurrente on one date). The test failed intermittently against `master`/pre-fix and now passes reliably (10/10 local runs) against the fix.
+  - Fixed a latent bug in the test builders while writing these: `build()` returned the builder's internal data object by reference, so building several payloads from the same builder instance (without sending each immediately) let later `.withX()` calls mutate earlier "built" payloads still waiting to be used. All builders now return a shallow copy.
+- [x] Validate débito automático catch-up when its payment day already passed before it was ever generated (`CF-SCH-GEN-009`).
+  - Found and confirmed a real gap: unlike `GastoRecurrenteService`, `DebitoAutomaticoService` had no "never generated, day already passed" catch-up branch — only a small 1-5 day weekend/holiday tolerance. A débito created with `dia_de_pago` earlier in the current month silently never generated until the following month. Fixed in `personal-finance-api-nodeJS` PR #41, which also fixed `AutomaticDebitExpenseStrategy.generate()` ignoring any catch-up target date and always stamping "today", plus a fresh instance of the `moment({...}).tz(zone)` vs `moment.tz({...}, zone)` timezone bug (PR #38's class of bug) introduced while writing the fix itself, caught by running under `TZ=UTC`.
+  - Test fails against `master`/pre-fix (0 gastos generated) and passes against the fix.
 
 ## P2 - AI Quality Orchestration
 

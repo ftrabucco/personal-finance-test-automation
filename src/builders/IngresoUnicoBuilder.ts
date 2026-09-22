@@ -46,6 +46,6 @@ export class IngresoUnicoBuilder {
       }
     }
 
-    return this.data as IngresoUnicoRequest
+    return { ...this.data } as IngresoUnicoRequest
   }
 }

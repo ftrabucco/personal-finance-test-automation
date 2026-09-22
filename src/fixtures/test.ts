@@ -9,11 +9,13 @@ import { GastosUnicosApiClient } from '@api/gastos-unicos.api'
 import { IngresosUnicosApiClient } from '@api/ingresos-unicos.api'
 import { PreferenciasApiClient } from '@api/preferencias.api'
 import { ProtectedResourcesApiClient } from '@api/protected-resources.api'
+import { TarjetasApiClient } from '@api/tarjetas.api'
 import { CompraBuilder } from '@builders/CompraBuilder'
 import { DebitoAutomaticoBuilder } from '@builders/DebitoAutomaticoBuilder'
 import { GastoRecurrenteBuilder } from '@builders/GastoRecurrenteBuilder'
 import { GastoUnicoBuilder } from '@builders/GastoUnicoBuilder'
 import { IngresoUnicoBuilder } from '@builders/IngresoUnicoBuilder'
+import { TarjetaBuilder } from '@builders/TarjetaBuilder'
 import { getEnvironmentConfig, requireTestUser } from '@config/environment'
 import { FinanceTestDataFactory } from '@factories/FinanceTestDataFactory'
 import { LoginPage } from '@pages/LoginPage'
@@ -52,11 +54,13 @@ type AppFixtures = {
   ingresosUnicosApi: IngresosUnicosApiClient
   preferenciasApi: PreferenciasApiClient
   protectedResourcesApi: ProtectedResourcesApiClient
+  tarjetasApi: TarjetasApiClient
   compraBuilder: CompraBuilder
   debitoAutomaticoBuilder: DebitoAutomaticoBuilder
   gastoRecurrenteBuilder: GastoRecurrenteBuilder
   gastoUnicoBuilder: GastoUnicoBuilder
   ingresoUnicoBuilder: IngresoUnicoBuilder
+  tarjetaBuilder: TarjetaBuilder
   financeTestDataFactory: FinanceTestDataFactory
   authSession: AuthSession
   authenticatedPage: Page
@@ -134,6 +138,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
     await use(new ProtectedResourcesApiClient(request, e2eContext))
   },
 
+  tarjetasApi: async ({ request, e2eContext }, use) => {
+    await use(new TarjetasApiClient(request, e2eContext))
+  },
+
   compraBuilder: async ({}, use) => {
     await use(new CompraBuilder())
   },
@@ -152,6 +160,10 @@ export const test = base.extend<AppFixtures, WorkerFixtures>({
 
   ingresoUnicoBuilder: async ({}, use) => {
     await use(new IngresoUnicoBuilder())
+  },
+
+  tarjetaBuilder: async ({}, use) => {
+    await use(new TarjetaBuilder())
   },
 
   financeTestDataFactory: async ({

@@ -76,6 +76,6 @@ export class GastoRecurrenteBuilder {
       }
     }
 
-    return this.data as GastoRecurrenteRequest
+    return { ...this.data } as GastoRecurrenteRequest
   }
 }

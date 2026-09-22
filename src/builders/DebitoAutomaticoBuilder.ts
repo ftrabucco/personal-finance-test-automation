@@ -68,6 +68,6 @@ export class DebitoAutomaticoBuilder {
       }
     }
 
-    return this.data as DebitoAutomaticoRequest
+    return { ...this.data } as DebitoAutomaticoRequest
   }
 }

@@ -57,6 +57,6 @@ export class GastoUnicoBuilder {
       }
     }
 
-    return this.data as GastoUnicoRequest
+    return { ...this.data } as GastoUnicoRequest
   }
 }
