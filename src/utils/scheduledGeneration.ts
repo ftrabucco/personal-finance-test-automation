@@ -157,6 +157,12 @@ export function todayDayOfMonthBuenosAires() {
   return todayInBuenosAires().day
 }
 
+/** The given day-of-month, in the current Buenos Aires year/month, as YYYY-MM-DD. */
+export function thisMonthIsoDateBuenosAires(day: number) {
+  const { year, month } = todayInBuenosAires()
+  return toIsoDate(year, month - 1, day)
+}
+
 /** Today's month-of-year (1-12) in Buenos Aires time. */
 export function todayMonthNumberBuenosAires() {
   return todayInBuenosAires().month

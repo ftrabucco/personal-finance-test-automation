@@ -6,6 +6,7 @@ import {
   monthsAgoIsoDate,
   regularInstallmentDate,
   shiftedIsoDate,
+  thisMonthIsoDateBuenosAires,
   todayDayOfMonthBuenosAires,
   todayIsoDateBuenosAires,
 } from '@utils/scheduledGeneration'
@@ -770,6 +771,96 @@ test.describe('Scheduled generation API destructive @destructive @api @gastos @c
       }
       if (tarjetaId) {
         const deleteResponse = await tarjetasApi.delete(authSession.token, tarjetaId)
+        await expectSuccessfulResponse(deleteResponse)
+      }
+    }
+  })
+
+  test('CF-SCH-GEN-009 a new monthly debito automatico whose payment day already passed this month still catches up', async ({
+    authSession,
+    catalogosApi,
+    debitosAutomaticosApi,
+    debitoAutomaticoBuilder,
+    gastosApi,
+    e2eContext,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    const todayDay = todayDayOfMonthBuenosAires()
+    test.skip(
+      todayDay < 11,
+      'Needs today to be at least the 11th of the month, to construct a payment day comfortably beyond the backend\'s few-day weekend/holiday tolerance while staying in the current month.',
+    )
+
+    let debitoAutomaticoId: number | undefined
+    const generatedGastoIds: number[] = []
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+
+      const categoria = catalogosBody.data?.categorias?.[0]
+      const importancia = catalogosBody.data?.importancias?.[0]
+      const tipoPago = catalogosBody.data?.tiposPago?.[0]
+      const frecuenciaMensual = findFrecuencia(catalogosBody, 'mensual')
+
+      expectDefined(categoria, 'Expected at least one expense category.')
+      expectDefined(importancia, 'Expected at least one expense importance.')
+      expectDefined(tipoPago, 'Expected at least one payment type.')
+      expectDefined(frecuenciaMensual, 'Expected a "Mensual" expense frequency in the catalog.')
+
+      // 10 days beyond the backend's weekend/holiday tolerance window
+      // (calculateDateTolerance caps at 2-5 days for monthly), so this can
+      // only generate today if the backend has a genuine "never generated,
+      // payment day already passed" catch-up branch for débitos automáticos
+      // — the same one gastos recurrentes already has. Regression coverage
+      // for a real gap found while reviewing debitoAutomatico.service.js:
+      // unlike recurrentes, débitos had no such branch at all, so a débito
+      // created after its payment day had passed simply never generated
+      // until the following month's payment day came around.
+      const diaDePago = todayDay - 10
+      const descripcion = e2eContext.entityName('Debito-Catchup')
+
+      const createResponse = await debitosAutomaticosApi.create(
+        authSession.token,
+        debitoAutomaticoBuilder
+          .withDescripcion(descripcion)
+          .withDiaDePago(diaDePago)
+          .withCatalogos({
+            categoria_gasto_id: categoria.id,
+            importancia_gasto_id: importancia.id,
+            tipo_pago_id: tipoPago.id,
+            frecuencia_gasto_id: frecuenciaMensual.id,
+          })
+          .build(),
+      )
+      const createBody = await expectSuccessfulResponse(createResponse)
+      debitoAutomaticoId = createBody.data?.id ?? createBody.data?.debitoAutomatico?.id
+      expect(debitoAutomaticoId).toBeTruthy()
+
+      const generateResponse = await gastosApi.generatePending(authSession.token)
+      await expectSuccessfulResponse(generateResponse)
+
+      const matches = await gastosApi.findByDescription(authSession.token, descripcion)
+      expect(
+        matches,
+        'A débito automático whose payment day already passed this month should still generate for this month on first run, the same way a gasto recurrente does — not silently wait for next month.',
+      ).toHaveLength(1)
+      generatedGastoIds.push(matches[0].id)
+      expect(matches[0].fecha).toBe(thisMonthIsoDateBuenosAires(diaDePago))
+
+      // Duplicate prevention: a same-day rerun must not add a second gasto.
+      const secondGenerateResponse = await gastosApi.generatePending(authSession.token)
+      await expectSuccessfulResponse(secondGenerateResponse)
+
+      const matchesAfterSecondRun = await gastosApi.findByDescription(authSession.token, descripcion)
+      expect(matchesAfterSecondRun, 'A same-day rerun must not duplicate the catch-up gasto').toHaveLength(1)
+    } finally {
+      if (generatedGastoIds.length > 0) {
+        await gastosApi.deleteMany(authSession.token, generatedGastoIds)
+      }
+      if (debitoAutomaticoId) {
+        const deleteResponse = await debitosAutomaticosApi.delete(authSession.token, debitoAutomaticoId)
         await expectSuccessfulResponse(deleteResponse)
       }
     }
