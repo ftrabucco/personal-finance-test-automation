@@ -3,6 +3,7 @@ import { expectDefined, expectSuccessfulResponse } from '@assertions/apiAssertio
 import { isDestructiveTestsAllowed, requireDestructiveTestsAllowed } from '@config/safety'
 import {
   creditCardDueDate,
+  findFrecuencia,
   monthsAgoIsoDate,
   regularInstallmentDate,
   shiftedIsoDate,
@@ -10,15 +11,9 @@ import {
   todayDayOfMonthBuenosAires,
   todayIsoDateBuenosAires,
 } from '@utils/scheduledGeneration'
-import type { CatalogosResponse, CatalogoItem } from '@api/catalogos.api'
+import type { CatalogosResponse } from '@api/catalogos.api'
 import { extractGastosConsolidados } from '@api/gastos.api'
 import type { GastosListResponse, GeneratePendingResponse } from '@api/gastos.api'
-
-function findFrecuencia(catalogosBody: CatalogosResponse, nombre: string): CatalogoItem | undefined {
-  return catalogosBody.data?.frecuencias?.find(
-    (frecuencia) => frecuencia.nombre_frecuencia?.toLowerCase() === nombre,
-  )
-}
 
 test.describe('Scheduled generation API destructive @destructive @api @gastos @compras @P2', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')

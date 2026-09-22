@@ -37,7 +37,8 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
   - [x] Add `GastoRecurrenteBuilder` and API client.
   - [x] Add `CompraBuilder` and API client.
   - [x] Add `DebitoAutomaticoBuilder` and API client.
-  - [x] Add `update` methods for `GastosRecurrentesApiClient`/`DebitosAutomaticosApiClient` (needed to reach the monthly-generation coverage below). No dedicated edit-flow test yet.
+  - [x] Add `update` methods for `GastosRecurrentesApiClient`/`DebitosAutomaticosApiClient` (needed to reach the monthly-generation coverage below).
+  - [x] Edit-flow coverage: `CF-SCH-004` (gasto recurrente) / `CF-SCH-005` (débito automático) — an edited `monto` is used by the next generation (not the value at creation time), and deactivating via `PUT` before ever generating stops it from generating. Found and fixed a bug in the *test itself* while writing these: both used `frecuencias?.[0]` for the catalog lookup, same as the original `CF-SCH-001`/`CF-SCH-002` definition tests — but `frecuencias[0]` is "Único", which never generates via the scheduler by design, so these silently generated nothing until switched to an explicit `findFrecuencia(catalogosBody, 'mensual')` (now exported from `scheduledGeneration.ts` and reused across all three spec files that need actual generation, not just definition CRUD).
 - [x] Add per-suite validation matrix in docs.
 - [x] Add richer assertions helpers for UI and API responses.
 - [x] Add CI HTML report artifact upload.
