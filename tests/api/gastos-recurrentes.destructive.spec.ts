@@ -7,6 +7,12 @@ import type { CatalogosResponse } from '@api/catalogos.api'
 test.describe('Gastos recurrentes API destructive @destructive @api @gastos @P1', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')
 
+  // CF-SCH-004 calls GET /gastos/generate, which processes every pending item
+  // for the authenticated user in one call (not scoped to this test's entities).
+  // `serial` keeps this file protected from cross-test interference even if run
+  // outside the npm script that sets E2E_WORKERS=1 (see scheduled-generation.destructive.spec.ts).
+  test.describe.configure({ mode: 'serial' })
+
   test('CF-SCH-001 creates, verifies and cleans up a gasto recurrente definition', async ({
     authSession,
     catalogosApi,
