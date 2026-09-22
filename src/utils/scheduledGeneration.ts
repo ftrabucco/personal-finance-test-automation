@@ -12,6 +12,23 @@
  * involved, only date-part arithmetic on YYYY-MM-DD strings.
  */
 
+import type { CatalogosResponse, CatalogoItem } from '@api/catalogos.api'
+
+/**
+ * Finds a frecuencia by name (case-insensitive) in a /catalogos response.
+ * Always use this instead of `frecuencias?.[0]` when the test will actually
+ * trigger generation: the seeded catalog's first frequency is "Único", which
+ * by design never generates via the scheduler (RecurringExpenseStrategy
+ * treats it as a one-off, not a recurring source) — harmless for
+ * definition-only CRUD tests, but silently breaks any test that calls
+ * generatePending() and expects a gasto to come out.
+ */
+export function findFrecuencia(catalogosBody: CatalogosResponse, nombre: string): CatalogoItem | undefined {
+  return catalogosBody.data?.frecuencias?.find(
+    (frecuencia) => frecuencia.nombre_frecuencia?.toLowerCase() === nombre,
+  )
+}
+
 function pad(value: number) {
   return String(value).padStart(2, '0')
 }
