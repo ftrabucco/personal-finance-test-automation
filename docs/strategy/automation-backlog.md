@@ -66,6 +66,11 @@ This backlog tracks coverage growth and framework maturity for the Personal Fina
 - [x] Perfil: read-only account data smoke.
   - [x] Password form initial state smoke.
   - [x] Restored-session account data prefill covered by `CF-PROFILE-READ-002`.
+- [x] Tarjetas: CRUD + type-conditional validation + delete-blocked-while-in-use (`CF-TAR-001` through `006`, `tests/api/tarjetas.destructive.spec.ts`).
+  - `CF-TAR-001`/`002`: `normalizeTarjetaData` overrides `permite_cuotas` and `dia_mes_cierre`/`dia_mes_vencimiento` based on `tipo`, regardless of what the client sends (e.g. `permite_cuotas:false` on a `credito` card is silently forced back to `true`).
+  - `CF-TAR-003`/`004`: Joi's `tipo`-conditional schema for `dia_mes_cierre`/`dia_mes_vencimiento` — required for `credito`, must be `null`/absent otherwise.
+  - `CF-TAR-005`: `PUT` is full-replace, not a partial patch (same pattern as gastos recurrentes/débitos automáticos).
+  - `CF-TAR-006`: a card referenced by a compra can't be deleted (`validateTarjetaUsage`), verified via `GET /tarjetas/:id/usage` before and after.
 
 ## P2 - Advanced Portfolio Value
 
