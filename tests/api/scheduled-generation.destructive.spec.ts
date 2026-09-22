@@ -23,6 +23,18 @@ function findFrecuencia(catalogosBody: CatalogosResponse, nombre: string): Catal
 test.describe('Scheduled generation API destructive @destructive @api @gastos @compras @P2', () => {
   test.skip(!isDestructiveTestsAllowed(), 'Destructive tests require local/staging and ALLOW_DESTRUCTIVE_TESTS=true')
 
+  // GET /gastos/generate isn't scoped to one test's entities — it processes
+  // every pending item for the authenticated user in one call. Running these
+  // tests in parallel lets one worker's generate() call sweep up another
+  // worker's not-yet-asserted/not-yet-cleaned-up entities, causing cross-test
+  // failures and orphaned data (see automation-backlog.md, "P2 - Scheduled
+  // Generation Behavior", for the incident this caught in staging). `serial`
+  // keeps this file's tests on one worker regardless of the run's --workers
+  // setting; `test:staging:destructive` additionally forces E2E_WORKERS=1 for
+  // the whole run so this file can't overlap with other files that also call
+  // generatePending() (gastos-recurrentes/debitos-automaticos edit-flow tests).
+  test.describe.configure({ mode: 'serial' })
+
   // monthsBack === cantidadCuotas - 1 so the *last* cuota's target date always
   // lands in the current month (fecha_compra + (cantidadCuotas - 1) months),
   // meaning every cuota is already due today and the compra fully completes

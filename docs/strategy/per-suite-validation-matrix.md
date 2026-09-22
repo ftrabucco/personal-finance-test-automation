@@ -75,6 +75,12 @@ npm run test:ui:parallel
 npm run test:staging:destructive
 ```
 
+**Scheduled generation (`tests/api/scheduled-generation.destructive.spec.ts`) must run alone with `--workers=1`** against staging/prod, not as part of the parallel run above — `GET /gastos/generate` processes every pending item for the user in one call, so parallel workers' generate() calls sweep up each other's not-yet-cleaned entities. See `automation-backlog.md`, "P2 - Scheduled Generation Behavior", for the incident this came from.
+
+```bash
+TEST_ENV=staging ALLOW_DESTRUCTIVE_TESTS=true npx playwright test tests/api/scheduled-generation.destructive.spec.ts --project=api --workers=1
+```
+
 ### Staging destructive UI
 
 ```bash
