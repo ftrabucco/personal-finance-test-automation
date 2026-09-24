@@ -35,8 +35,21 @@ export class TarjetasApiClient extends BaseApiClient {
     })
   }
 
+  async update(token: string, id: number, data: TarjetaRequest, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl(`/tarjetas/${id}`), {
+      headers: this.authHeaders(token, metadata),
+      data,
+    })
+  }
+
   async delete(token: string, id: number, metadata?: E2EMetadata) {
     return this.request.delete(this.apiUrl(`/tarjetas/${id}`), {
+      headers: this.authHeaders(token, metadata),
+    })
+  }
+
+  async getUsage(token: string, id: number, metadata?: E2EMetadata) {
+    return this.request.get(this.apiUrl(`/tarjetas/${id}/usage`), {
       headers: this.authHeaders(token, metadata),
     })
   }
