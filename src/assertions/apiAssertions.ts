@@ -25,6 +25,21 @@ export async function expectUnauthorizedResponse(response: APIResponse) {
   return body
 }
 
+/** Joi validation failures (createValidationMiddleware) respond 400 with `{success:false, details:[{field,message}]}`. */
+export async function expectValidationError(response: APIResponse, expectedField?: string) {
+  expect(response.status(), await response.text()).toBe(400)
+
+  const body = await response.json()
+  expect(body.success).toBe(false)
+
+  if (expectedField) {
+    const fields = (body.details ?? []).map((detail: { field: string }) => detail.field)
+    expect(fields, `Expected a validation error on field "${expectedField}", got: ${JSON.stringify(body.details)}`).toContain(expectedField)
+  }
+
+  return body
+}
+
 export function expectDefined<T>(
   value: T | undefined | null,
   message: string,

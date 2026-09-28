@@ -1,26 +1,52 @@
 # Personal Finance Test Automation
 
+[![PR Checks](https://github.com/ftrabucco/personal-finance-test-automation/actions/workflows/pr-checks.yml/badge.svg)](https://github.com/ftrabucco/personal-finance-test-automation/actions/workflows/pr-checks.yml)
+![Playwright](https://img.shields.io/badge/Playwright-Test-2ead33)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178c6)
+
 Repositorio de automatizacion de pruebas para la aplicacion Personal Finance.
-Incluye estrategia, planes de prueba, automatizacion de UI con Playwright y
-pruebas directas de API.
+Combina estrategia de calidad, pruebas de contrato y API, automatizacion UI con
+Playwright, controles de seguridad por ambiente y diagnostico de fallas en CI.
 
 ## Estado
 
-Fase inicial de analisis y planificacion. Antes de implementar tests se
-documentaran:
+Suite activa con cobertura automatizada sobre staging y smoke read-only contra
+produccion. La implementacion incluye:
 
-- funcionalidades y reglas de negocio;
-- flujos E2E criticos;
-- inventario y cobertura de APIs;
-- riesgos y prioridades;
-- estrategia de datos y ambientes;
-- test plans;
-- arquitectura del framework de automatizacion.
+- contratos de autenticacion, catalogos y recursos protegidos;
+- flujos UI de autenticacion, dashboard, navegacion, perfil y configuracion;
+- CRUD y validaciones para gastos, ingresos, tarjetas y definiciones programadas;
+- ejecuciones destructivas protegidas por ambiente y flag explicito;
+- Page Objects, API Clients, fixtures, builders y factories tipadas;
+- reportes de Playwright con traces, screenshots, video y metadata de triage;
+- GitHub Actions para PR checks, suites manuales de staging y orquestacion de fallas.
+
+El backlog y la matriz de cobertura siguen evolucionando junto con el producto.
 
 ## Repos relacionados
 
-- `personal-finance-frontend`
-- `personal-finance-api-nodeJS`
+- [Frontend](https://github.com/ftrabucco/personal-finance-frontend)
+- [API](https://github.com/ftrabucco/personal-finance-api-nodeJS)
+
+## Arquitectura
+
+```text
+tests/
+  api/          contratos, smoke read-only y flujos destructivos
+  ui/           smoke y recorridos E2E por navegador
+src/
+  api/          clientes HTTP tipados por dominio
+  assertions/   validaciones reutilizables
+  builders/     payloads validos y configurables
+  config/       ambientes, setup global y guardas de seguridad
+  factories/    composicion de datos para flujos de negocio
+  fixtures/     inyeccion de dependencias Playwright
+  pages/        Page Objects
+  reporting/    clasificacion y contexto de fallas
+```
+
+La explicacion completa esta en
+[`docs/strategy/framework-architecture.md`](docs/strategy/framework-architecture.md).
 
 ## Documentacion
 
