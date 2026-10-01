@@ -19,7 +19,12 @@ test.describe('Unique transaction filters UI destructive @destructive @ui @filte
     requireDestructiveTestsAllowed()
 
     const createdIds: number[] = []
-    const targetDate = isoDateDaysAgo(1)
+    // Must stay within the current calendar month: the "Únicos" tab's
+    // default filter is "this month", and these tests check the matching
+    // entity is visible there *before* applying the explicit date-range
+    // filter below. isoDateDaysAgo(1) ("yesterday") crossed into the
+    // previous month on the 1st of every month, breaking that check.
+    const targetDate = todayIsoDate()
     const outsideDate = isoDateDaysAgo(45)
 
     try {
@@ -105,7 +110,12 @@ test.describe('Unique transaction filters UI destructive @destructive @ui @filte
     requireDestructiveTestsAllowed()
 
     const createdIds: number[] = []
-    const targetDate = isoDateDaysAgo(1)
+    // Must stay within the current calendar month: the "Únicos" tab's
+    // default filter is "this month", and these tests check the matching
+    // entity is visible there *before* applying the explicit date-range
+    // filter below. isoDateDaysAgo(1) ("yesterday") crossed into the
+    // previous month on the 1st of every month, breaking that check.
+    const targetDate = todayIsoDate()
     const outsideDate = isoDateDaysAgo(45)
 
     try {
@@ -189,4 +199,8 @@ function catalogoName(item: CatalogoItem, fields: CatalogoNameField[]) {
 
 function isoDateDaysAgo(days: number) {
   return new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+}
+
+function todayIsoDate() {
+  return new Date().toISOString().slice(0, 10)
 }

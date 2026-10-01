@@ -84,6 +84,17 @@ test.describe('Dashboard UI destructive @destructive @ui @dashboard @P1', () => 
     test.skip(testInfo.project.name !== 'chromium', 'Destructive UI flow runs once to avoid duplicated data')
     requireDestructiveTestsAllowed()
 
+    // Each expect.poll below allows up to 40s (longer than the 30s
+    // refetchInterval), but the default *test* timeout (playwright.config.ts)
+    // is only 30s and overrides everything inside it, including per-assertion
+    // poll timeouts. Without raising it here, this test always times out
+    // before any poll gets its full window — passed locally only because
+    // local latency left enough slack under 30s; failed consistently against
+    // staging's extra network latency. The three polls run sequentially and
+    // may each need close to their full window if the three hooks' 30s
+    // intervals aren't in sync, so budget generously rather than tightly.
+    test.setTimeout(120_000)
+
     const gastoAmount = 4321
     const ingresoAmount = 8765
     const { payload: gastoBase } = await financeTestDataFactory.gastoUnicoForUi(authSession.token)
