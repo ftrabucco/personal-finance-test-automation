@@ -33,6 +33,10 @@ export class GastosPage extends BasePage {
     await super.goto('/gastos?tab=debitos')
   }
 
+  async gotoHistorial() {
+    await super.goto('/gastos?tab=historial')
+  }
+
   async expectLoaded() {
     const main = this.page.getByRole('main')
 
@@ -144,6 +148,92 @@ export class GastosPage extends BasePage {
 
   async expectGastoNotVisible(descripcion: string) {
     await expect(this.gastoItem(descripcion)).not.toBeVisible()
+  }
+
+  // ── Historial tab ──
+  // GastosHistorial renders rows as plain `<button>` elements (no `tr`/
+  // `div.rounded-lg` like the Unicos tab's table/cards), so it needs its own
+  // locators instead of reusing gastoItem().
+
+  async searchHistorial(term: string) {
+    await this.page.getByPlaceholder('Buscar por descripción o categoría...').fill(term)
+  }
+
+  async filterHistorialByTipoOrigen(label: string) {
+    await this.page.getByRole('combobox').nth(0).click()
+    await this.page.getByRole('option', { name: label, exact: true }).click()
+  }
+
+  async filterHistorialByCategoria(label: string) {
+    await this.page.getByRole('combobox').nth(1).click()
+    await this.page.getByRole('option', { name: label, exact: true }).click()
+  }
+
+  async filterHistorialByImportancia(label: string) {
+    await this.page.getByRole('button', { name: label, exact: true }).click()
+  }
+
+  async clearHistorialFilters() {
+    await this.page.getByRole('button', { name: 'Limpiar todo' }).click()
+  }
+
+  async toggleHistorialGroupBy() {
+    await this.page.getByTitle(/Agrupar por/).click()
+  }
+
+  async expectHistorialRowVisible(descripcion: string) {
+    await expect(this.historialRow(descripcion)).toBeVisible()
+  }
+
+  async expectHistorialRowNotVisible(descripcion: string) {
+    await expect(this.historialRow(descripcion)).not.toBeVisible()
+  }
+
+  async isHistorialRowVisible(descripcion: string) {
+    return this.historialRow(descripcion).isVisible()
+  }
+
+  async expandHistorialRow(descripcion: string) {
+    await this.historialRow(descripcion).click()
+  }
+
+  async deleteFromHistorialExpandedRow() {
+    await this.page.getByRole('button', { name: 'Eliminar' }).click()
+    await expect(this.page.getByRole('dialog', { name: 'Eliminar gasto' })).toBeVisible()
+  }
+
+  async confirmHistorialDelete() {
+    await Promise.all([
+      this.page.waitForResponse(
+        (response) => response.url().includes('/gastos/') && response.request().method() === 'DELETE' && response.ok(),
+      ),
+      this.page.getByRole('dialog', { name: 'Eliminar gasto' }).getByRole('button', { name: 'Eliminar' }).click(),
+    ])
+  }
+
+  async cancelHistorialDelete() {
+    await this.page.getByRole('dialog', { name: 'Eliminar gasto' }).getByRole('button', { name: 'Cancelar' }).click()
+    await expect(this.page.getByRole('dialog', { name: 'Eliminar gasto' })).not.toBeVisible()
+  }
+
+  historialGroupHeader(label: string) {
+    return this.page.locator('div.sticky').filter({ hasText: label })
+  }
+
+  async historialGroupHeaderLabelsInOrder() {
+    return this.page.locator('div.sticky').allTextContents()
+  }
+
+  historialPagination() {
+    return this.page.getByText(/^\d+\s*\/\s*\d+$/)
+  }
+
+  async goToHistorialNextPage() {
+    await this.page.getByRole('button').filter({ has: this.page.locator('svg.lucide-chevron-right') }).click()
+  }
+
+  private historialRow(descripcion: string) {
+    return this.page.locator('button').filter({ hasText: descripcion }).first()
   }
 
   private gastoUnicoDialog() {
