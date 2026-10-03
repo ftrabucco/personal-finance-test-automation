@@ -225,11 +225,19 @@ export class GastosPage extends BasePage {
   }
 
   historialPagination() {
-    return this.page.getByText(/^\d+\s*\/\s*\d+$/)
+    // The "{page} / {totalPages}" span is a sibling of the next-page button,
+    // not a descendant — go to the button's parent to reach it. A plain
+    // text/regex match for "n / m" would also match each row's compact
+    // "dd/MM" date span (e.g. "02/10"), so this can't use getByText directly.
+    return this.historialNextPageButton().locator('xpath=../span')
   }
 
   async goToHistorialNextPage() {
-    await this.page.getByRole('button').filter({ has: this.page.locator('svg.lucide-chevron-right') }).click()
+    await this.historialNextPageButton().click()
+  }
+
+  private historialNextPageButton() {
+    return this.page.getByRole('button').filter({ has: this.page.locator('svg.lucide-chevron-right') })
   }
 
   private historialRow(descripcion: string) {
