@@ -32,4 +32,39 @@ export class DashboardPage extends BasePage {
 
     return amountTitle
   }
+
+  // ── Dashboard personalization (CF-CONF-003) ──
+
+  async openPersonalizar() {
+    await this.page.getByRole('button', { name: 'Personalizar' }).click()
+    await expect(this.page.getByRole('heading', { name: 'Personalizar Dashboard' })).toBeVisible()
+  }
+
+  async closePersonalizar() {
+    await this.page.keyboard.press('Escape')
+    await expect(this.page.getByRole('heading', { name: 'Personalizar Dashboard' })).not.toBeVisible()
+  }
+
+  /** Must be called with the Personalizar sheet open (see openPersonalizar()). */
+  async toggleDashboardSection(sectionLabel: string) {
+    await this.page.getByRole('switch', { name: sectionLabel }).click()
+  }
+
+  /** Must be called with the Personalizar sheet closed — its labels share text with the section headings. */
+  async expectDashboardSectionVisible(sectionLabel: string) {
+    await expect(this.page.getByText(sectionLabel, { exact: true })).toBeVisible()
+  }
+
+  async expectDashboardSectionNotVisible(sectionLabel: string) {
+    await expect(this.page.getByText(sectionLabel, { exact: true })).not.toBeVisible()
+  }
+
+  async expectRecentExpenseVisible(descripcion: string) {
+    await expect(
+      this.page
+        .getByText('Gastos Recientes', { exact: true })
+        .locator('xpath=ancestor::div[contains(@class,"rounded-lg")][1]')
+        .getByText(descripcion),
+    ).toBeVisible()
+  }
 }
