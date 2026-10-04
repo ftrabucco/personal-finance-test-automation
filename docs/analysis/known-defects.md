@@ -140,6 +140,27 @@ by the application.
   smoke test.
 - Tracking: Not created yet.
 
+## BUG-2026-007 - Grouping the Historial by date shows no subtotal per group
+
+- Status: Open
+- Severity: Low
+- Area: Frontend UI
+- Found by: `tests/ui/gastos-historial.destructive.spec.ts`
+- Related flow: `CF-EXP-005`
+- Evidence: In `GastosHistorial.tsx`, `groupedGastos` only computes a
+  `subtotal` when `groupBy === 'category'`; the `date` branch pushes
+  `{ label: group, items: [] }` with no `subtotal`, so the group header
+  renders only the item count, never an amount
+  (`group.subtotal !== undefined` guards the amount `<span>`).
+- Expected: `docs/test-plans/dashboard-historial-test-plan.md` ("Agrupar por
+  fecha muestra subtotales por día") expects every group — date or
+  category — to show its subtotal, matching the sum of its items.
+- Actual: Grouping by date shows `"Hoy (3)"` style headers with no amount;
+  only grouping by category shows a subtotal.
+- Proposed test: `tests/ui/gastos-historial.destructive.spec.ts` has a
+  `test.skip('BUG-2026-007 ...')` documenting the expected behavior.
+- Tracking: Not created yet.
+
 ## Template
 
 ```md
