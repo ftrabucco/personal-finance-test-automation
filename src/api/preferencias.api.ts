@@ -18,9 +18,19 @@ export interface PreferenciasResponse {
     id?: number
     usuario_id?: number
     modulos_activos?: string[]
+    dashboard_sections?: string[]
+    balance_inicial?: number
+    tema?: 'light' | 'dark' | 'system'
   }
   error?: string
   message?: string
+}
+
+export interface PreferenciasUpdate {
+  dashboard_sections?: string[]
+  balance_inicial?: number
+  tema?: 'light' | 'dark' | 'system'
+  modulos_activos?: string[]
 }
 
 export class PreferenciasApiClient extends BaseApiClient {
@@ -31,6 +41,13 @@ export class PreferenciasApiClient extends BaseApiClient {
   async get(token: string, metadata?: E2EMetadata) {
     return this.request.get(this.apiUrl('/preferencias'), {
       headers: this.authHeaders(token, metadata),
+    })
+  }
+
+  async update(token: string, data: PreferenciasUpdate, metadata?: E2EMetadata) {
+    return this.request.put(this.apiUrl('/preferencias'), {
+      headers: this.authHeaders(token, metadata),
+      data,
     })
   }
 
