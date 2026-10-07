@@ -161,9 +161,9 @@ by the application.
   `test.skip('BUG-2026-007 ...')` documenting the expected behavior.
 - Tracking: Not created yet.
 
-## BUG-2026-008 - Gasto generated from a debito automatico loses `moneda_origen` and `tipo_cambio_usado`
+## BUG-2026-009 - Gasto generated from a debito automatico loses `moneda_origen` and `tipo_cambio_usado`
 
-- Status: Open
+- Status: Fixed
 - Severity: Medium
 - Area: Backend API / Expense generation
 - Found by: analysis of production data (2026-10-03); reproduced by
@@ -181,10 +181,14 @@ by the application.
   keeps its moneda_origen and tipo_cambio_usado" in
   `tests/api/debitos-automaticos.destructive.spec.ts`. Fails against the
   unfixed backend with `Expected "USD", Received "ARS"`.
-- Tracking: Fix in `personal-finance-api-nodeJS` branch
-  `fix/debito-automatico-currency-fields`. Change to `Fixed` once it is
-  deployed to staging and this test passes there. Existing gastos are not
-  backfilled; see `docs/architecture/known-issues.md` in the backend repo.
+- Fixed notes: Fixed in `personal-finance-api-nodeJS` PR #45. Verified on
+  staging after the deploy: the `CF-SCH-002` generation test passed in the
+  "Staging Destructive Tests" run of 2026-10-07 (run 37557989830). Gastos
+  generated before the fix are not backfilled; see
+  `docs/architecture/known-issues.md` in the backend repo.
+- Tracking: Not created yet.
+- Numbering: first recorded as BUG-2026-008 in #44; renumbered because
+  BUG-2026-008 was assigned to the gasto único delete defect.
 
 ## Template
 
