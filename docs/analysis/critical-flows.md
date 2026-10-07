@@ -208,7 +208,9 @@ respeta frecuencia, inicio, dia y mes de pago, y evita duplicados.
 ### CF-SCH-002 - Procesar un debito automatico
 
 Un debito activo genera el gasto correspondiente usando tarjeta o cuenta
-bancaria y la regla de fecha configurada.
+bancaria y la regla de fecha configurada. El gasto generado conserva la moneda
+del debito (`moneda_origen`) y su tipo de cambio de referencia
+(`tipo_cambio_usado`).
 
 **Riesgo:** alto hasta confirmar el contrato entre formulario, validacion API y
 modelo.

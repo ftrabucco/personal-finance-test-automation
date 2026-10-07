@@ -177,4 +177,104 @@ test.describe('Debitos automaticos API destructive @destructive @api @gastos @de
       }
     }
   })
+
+  test('CF-SCH-002 the gasto generated from a debito automatico keeps its moneda_origen and tipo_cambio_usado', async ({
+    authSession,
+    catalogosApi,
+    debitosAutomaticosApi,
+    debitoAutomaticoBuilder,
+    gastosApi,
+    e2eContext,
+  }) => {
+    requireDestructiveTestsAllowed()
+
+    const debitoAutomaticoIds: number[] = []
+    const generatedGastoIds: number[] = []
+
+    try {
+      const catalogosResponse = await catalogosApi.getAll(authSession.token)
+      const catalogosBody = (await expectSuccessfulResponse(catalogosResponse)) as CatalogosResponse
+
+      const categoria = catalogosBody.data?.categorias?.[0]
+      const importancia = catalogosBody.data?.importancias?.[0]
+      const tipoPago = catalogosBody.data?.tiposPago?.[0]
+      // "Mensual" so the scheduler actually generates it (see CF-SCH-005).
+      const frecuencia = findFrecuencia(catalogosBody, 'mensual')
+
+      expectDefined(categoria, 'Expected at least one expense category.')
+      expectDefined(importancia, 'Expected at least one expense importance.')
+      expectDefined(tipoPago, 'Expected at least one payment type.')
+      expectDefined(frecuencia, 'Expected a "Mensual" expense frequency in the catalog.')
+
+      const catalogos = {
+        categoria_gasto_id: categoria.id,
+        importancia_gasto_id: importancia.id,
+        tipo_pago_id: tipoPago.id,
+        frecuencia_gasto_id: frecuencia.id,
+      }
+      const diaDePago = todayDayOfMonthBuenosAires()
+      const montoUsd = 25
+      const montoArs = 450
+
+      const createDebito = async (descripcion: string, monto: number, moneda: 'ARS' | 'USD') => {
+        const payload = debitoAutomaticoBuilder
+          .withDescripcion(descripcion)
+          .withMonto(monto)
+          .withMonedaOrigen(moneda)
+          .withDiaDePago(diaDePago)
+          .withCatalogos(catalogos)
+          .build()
+        const createResponse = await debitosAutomaticosApi.create(authSession.token, payload)
+        const createBody = await expectSuccessfulResponse(createResponse)
+        const id: number = createBody.data?.id ?? createBody.data?.debitoAutomatico?.id
+        expect(id).toBeTruthy()
+        debitoAutomaticoIds.push(id)
+
+        const getResponse = await debitosAutomaticosApi.getById(authSession.token, id)
+        const getBody = await expectSuccessfulResponse(getResponse)
+        return getBody.data?.debitoAutomatico ?? getBody.data
+      }
+
+      const descripcionUsd = e2eContext.entityName('Debito-Gen-USD')
+      const descripcionArs = e2eContext.entityName('Debito-Gen-ARS')
+      const debitoUsd = await createDebito(descripcionUsd, montoUsd, 'USD')
+      const debitoArs = await createDebito(descripcionArs, montoArs, 'ARS')
+
+      // The generated gasto must carry the exchange rate the debito holds as
+      // its reference, so the debito has to have one for this test to mean anything.
+      expectDefined(debitoUsd.tipo_cambio_referencia, 'Expected the USD debito to store a reference exchange rate.')
+      expectDefined(debitoArs.tipo_cambio_referencia, 'Expected the ARS debito to store a reference exchange rate.')
+
+      const generateResponse = await gastosApi.generatePending(authSession.token)
+      await expectSuccessfulResponse(generateResponse)
+
+      const matchesUsd = await gastosApi.findByDescription(authSession.token, descripcionUsd)
+      expect(matchesUsd, 'Expected the USD debito to generate exactly one gasto').toHaveLength(1)
+      generatedGastoIds.push(matchesUsd[0].id)
+
+      const matchesArs = await gastosApi.findByDescription(authSession.token, descripcionArs)
+      expect(matchesArs, 'Expected the ARS debito to generate exactly one gasto').toHaveLength(1)
+      generatedGastoIds.push(matchesArs[0].id)
+
+      const gastoUsd = matchesUsd[0]
+      expect(gastoUsd.tipo_origen).toBe('debito_automatico')
+      expect(gastoUsd.moneda_origen, 'A USD debito must generate a gasto with moneda_origen USD').toBe('USD')
+      expect(Number(gastoUsd.tipo_cambio_usado)).toBe(Number(debitoUsd.tipo_cambio_referencia))
+      expect(Number(gastoUsd.monto_usd)).toBe(montoUsd)
+      expect(Math.abs(Number(gastoUsd.monto_ars) - montoUsd * Number(gastoUsd.tipo_cambio_usado))).toBeLessThan(1)
+
+      const gastoArs = matchesArs[0]
+      expect(gastoArs.tipo_origen).toBe('debito_automatico')
+      expect(gastoArs.moneda_origen).toBe('ARS')
+      expect(Number(gastoArs.tipo_cambio_usado)).toBe(Number(debitoArs.tipo_cambio_referencia))
+      expect(Number(gastoArs.monto_ars)).toBe(montoArs)
+    } finally {
+      if (generatedGastoIds.length > 0) {
+        await gastosApi.deleteMany(authSession.token, generatedGastoIds)
+      }
+      if (debitoAutomaticoIds.length > 0) {
+        await debitosAutomaticosApi.deleteMany(authSession.token, debitoAutomaticoIds)
+      }
+    }
+  })
 })

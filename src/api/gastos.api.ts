@@ -7,6 +7,8 @@ export interface GastoResponseItem {
   descripcion: string
   monto?: number | string
   monto_ars?: number | string
+  monto_usd?: number | string | null
+  tipo_cambio_usado?: number | string | null
   fecha?: string
   tipo_origen?: string
   id_origen?: number
