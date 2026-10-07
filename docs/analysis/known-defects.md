@@ -161,6 +161,31 @@ by the application.
   `test.skip('BUG-2026-007 ...')` documenting the expected behavior.
 - Tracking: Not created yet.
 
+## BUG-2026-008 - Gasto generated from a debito automatico loses `moneda_origen` and `tipo_cambio_usado`
+
+- Status: Open
+- Severity: Medium
+- Area: Backend API / Expense generation
+- Found by: analysis of production data (2026-10-03); reproduced by
+  `tests/api/debitos-automaticos.destructive.spec.ts`
+- Related flow: `CF-SCH-002`
+- Evidence: In production, 57 of 57 gastos with `tipo_origen = 'debito_automatico'`
+  have `tipo_cambio_usado = NULL`, while the gastos from `unico`, `recurrente`
+  and `compra` always have it. Debitos defined in USD generate gastos with
+  `moneda_origen = 'ARS'`. `AutomaticDebitExpenseStrategy` did not pass those
+  two fields to `createGastoData`, unlike `BaseRecurringStrategy`.
+- Expected: The generated gasto copies `moneda_origen` from the debito and
+  stores the debito's `tipo_cambio_referencia` as `tipo_cambio_usado`.
+- Actual: `moneda_origen` is always `ARS` and `tipo_cambio_usado` is `NULL`.
+- Proposed test: `CF-SCH-002` "the gasto generated from a debito automatico
+  keeps its moneda_origen and tipo_cambio_usado" in
+  `tests/api/debitos-automaticos.destructive.spec.ts`. Fails against the
+  unfixed backend with `Expected "USD", Received "ARS"`.
+- Tracking: Fix in `personal-finance-api-nodeJS` branch
+  `fix/debito-automatico-currency-fields`. Change to `Fixed` once it is
+  deployed to staging and this test passes there. Existing gastos are not
+  backfilled; see `docs/architecture/known-issues.md` in the backend repo.
+
 ## Template
 
 ```md

@@ -27,6 +27,11 @@ export class DebitoAutomaticoBuilder {
     return this
   }
 
+  withMonedaOrigen(monedaOrigen: 'ARS' | 'USD') {
+    this.data.moneda_origen = monedaOrigen
+    return this
+  }
+
   withDiaDePago(diaDePago: number | null) {
     this.data.dia_de_pago = diaDePago
     return this
