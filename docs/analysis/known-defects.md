@@ -88,6 +88,62 @@ by the application.
 - Fixed notes: Frontend now removes the deleted gasto from React Query cache
   and refetches related gasto queries after successful delete.
 - Tracking: Not created yet.
+- **Reopened 2026-10-07 — see BUG-2026-008.** `CF-EXP-001` failed again on
+  staging with the same visible symptom, but the confirmed root cause this
+  time is backend, not frontend — the frontend's cache handling described
+  above is still correct.
+
+## BUG-2026-008 - DELETE /gastos-unicos/:id reports success but doesn't delete, only when driven through a live browser session
+
+- Status: Needs Analysis
+- Severity: High
+- Area: Backend API (reproduction specific to browser-driven requests)
+- Found by: `tests/ui/gastos-unicos.destructive.spec.ts` (`CF-EXP-001`),
+  consistently reproduced 3/3 runs against staging on 2026-10-06/07.
+- Evidence:
+  - UI flow: create a gasto único dated yesterday (so it's immediately
+    `procesado: true`), click delete, confirm. The DELETE response is
+    `200 {"success":true,"data":{"gastos_eliminados":0,...}}` and the row
+    stays visible. A follow-up `GET /gastos-unicos` (via API, not just the
+    UI) confirms the row still exists server-side — this is not a frontend
+    caching/render issue.
+  - The exact same sequence (create a gasto dated yesterday with
+    `procesado:true`, delete immediately, zero delay) run as **plain API
+    calls via curl, with no browser involved**, succeeded correctly 3/3
+    times: `gastos_eliminados:1` and a follow-up `GET` 404s as expected.
+  - The service logic itself (`GastoUnicoService.deleteWithAssociatedGasto`,
+    `src/services/gastoUnico.service.js:465`) was replicated line-for-line
+    against the **local** dev database outside the HTTP layer (direct
+    Sequelize calls: `Gasto.destroy` then `GastoUnico.destroy`, same
+    transaction) and also deleted correctly every time.
+  - No Postgres triggers exist on `DELETE` for `gastos_unico`/`gastos` in the
+    local schema (`information_schema.triggers` only has `BEFORE UPDATE`
+    triggers for `updated_at` columns) — may still differ on staging, not
+    confirmed there.
+  - Ruled out: scheduler-vs-delete race (curl repro had zero delay and still
+    succeeded), the frontend's delete-id targeting (the failing run's DELETE
+    request was confirmed via Playwright's `waitForResponse` to carry the
+    correct, just-created id), and the e2e observability headers
+    (`x-e2e-test-run-id` etc. — `src/middlewares/e2eMetadata.middleware.js`
+    only attaches them to `req.e2eMetadata` for logging, no behavior branch
+    reads it).
+- Expected: `DELETE /gastos-unicos/:id` should delete the row whenever driven
+  through the real frontend, the same as it does via a direct API call.
+- Actual: reproducible only when the request originates from an actual
+  loaded browser session (real SPA, with its own background
+  polling/queries active — dashboard refetch interval, tipo de cambio
+  refresh, etc. from `CF-DASH-002`'s work), never from an isolated API call.
+  Root cause is still open: most likely a concurrent request from the SPA's
+  background activity interfering with this specific transaction (e.g. a
+  lock wait or a second write touching the same `gastos`/`gastos_unico` rows
+  around the same time), but this needs staging server-side logs at the
+  exact failing timestamp to confirm — not available from this
+  investigation.
+- Proposed test: `CF-EXP-001` in `tests/ui/gastos-unicos.destructive.spec.ts`
+  already covers and will keep failing until this is fixed; left unskipped
+  on purpose so it keeps signaling the regression instead of going silently
+  green.
+- Tracking: Not created yet.
 
 ## BUG-2026-005 - Gastos únicos API rejects the currency filter with a 400
 
